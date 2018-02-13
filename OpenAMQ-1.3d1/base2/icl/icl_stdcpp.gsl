@@ -1,0 +1,552 @@
+#  ----------------------------------------------------------------------------
+#   iCL template for C++ class wrapper
+#
+#   Note to maintainers: please check the generated code regularly to make
+#   sure blank lines and indentation remains correct.
+#  ----------------------------------------------------------------------------
+#
+#   Copyright (c) 1996-2009 iMatix Corporation
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or (at
+#   your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   General Public License for more details.
+#
+#   For information on alternative licensing for OEMs, please contact
+#   iMatix Corporation.
+#
+.include "icl_stdc_lib.gsl"
+
+.macro generate_method_wrapper (second_pass)
+
+        \
+.   for argument where !defined (prefill) & \
+                       !defined (precalc) & \
+                       name <> "self"     & \
+                       !((method.name = "destroy" | \
+                          method.name = "unlink") & name = "self_p")
+.       if type = "..."
+.           if my.second_pass = 0
+\...\
+.           else
+va_list $(expand(name))\
+.           endif
+.       else
+.           if argument.pass = "in"
+icl_info <$(expand (type))>::cpp_const_type_ref $(expand (name))\
+.           else
+icl_info <$(expand (type))>::cpp_type_ref $(expand (name))\
+.           endif
+.           if defined (argument.index)
+[$(index)]\
+.           endif
+$(!last()??",\n        "?)\
+.       endif
+.   else
+void\
+.   endfor
+)\
+.endmacro
+
+.macro generate_method_wrapper_impl (second_pass)
+.   generate_method_wrapper (my.second_pass)
+
+{
+.       if count (argument, type = "...") & my.second_pass = 0
+    va_list
+        $(expand(method->argument (type = "...").name):c);
+.           for argument where type <> "..."
+.               lastarg = argument.name
+.           endfor
+    va_start ($(expand(method->argument (type = "...").name):c), $(expand(lastarg)));
+.       endif
+.       if name = "new"
+.           if classtype = "unduplicable"
+    p = new proxy_t;
+    p->refcount = 1;
+    p->p = $(base)$(expand (name):c)\
+.           else
+    p = $(base)$(expand (name):c)\
+.           endif
+.       elsif returnt = "void"
+    $(base)$(expand (name):c)\
+.       else
+    return $(base)$(expand (name):c)\
+.       endif
+.       if count (argument, type = "...") > 0
+_v\
+.       endif
+ (\
+.       for argument where (!defined (precalc)) & (!defined (prefill))
+.           if name = "self"
+.               if classtype = "unduplicable"
+this->p->p\
+.               else
+this->p\
+.               endif
+.           elsif (method.name = "destroy" | method.name = "unlink") & name = "self_p"
+.               if classtype = "unduplicable"
+&(this->p->p)\
+.               else
+&(this->p)\
+.               endif
+.           else
+$(expand(name))\
+.           endif
+$(!last()??', '?)\
+.       endfor
+);
+.   if count (argument, type = "...") & my.second_pass = 0
+    va_end ($(method->argument (type = "...").name:c));
+.   endif
+}
+.endmacro
+
+.#############################   GENERATE CLASS   #############################
+
+.macro generate_class_body_static (class)
+.if count (method, !private & name <> "new in scope") > 0
+
+class $(selfname:camel)
+{
+public:
+.   for method where !private & name <> "new in scope"
+
+    static \
+.       if returnt = "void"
+void
+.       else
+icl_info <$(expand(returnt))>::cpp_type
+.       endif
+    $(expand(name):camel) (\
+.       generate_method_wrapper (0)
+;
+.       if count (argument, type = "...")
+
+    static \
+.           if returnt = "void"
+void
+.           else
+icl_info <$(expand(returnt))>::cpp_type
+.           endif
+    $(expand(name):camel)V (\
+.           generate_method_wrapper (1)
+;
+.       endif
+.   endfor
+private:
+    $(selfname:camel) ();
+    $(selfname:camel) (const $(selfname:camel)&);
+    $(selfname:camel) &operator = (const $(selfname:camel)&);
+};
+
+.endif
+.endmacro
+
+.macro generate_class_body (class, classtype)
+.   default_constructor = 0
+
+class $(selfname:camel)
+{
+    friend struct icl_info <$(selfname)_t*>;
+public:
+
+.   if my.classtype = "unduplicable"
+    inline
+    $(selfname:camel) ($(selfname)_t *raw)
+    {
+        p = new proxy_t;
+        p->refcount = 1;
+        p->p = raw;
+    }
+
+    $(selfname:camel) &operator = ($(selfname)_t *raw)
+    {
+        if (!icl_atomic_dec32 (&(p->refcount))) {
+            $(selfname)_destroy (&(p->p));
+            delete (p);
+        }
+        p = new proxy_t;
+        p->refcount = 1;
+        p->p = raw;
+        return *this;
+    }
+.   else
+    inline
+    $(selfname:camel) ($(selfname)_t *raw)
+    {
+        p = raw;
+    }
+
+    $(selfname:camel) &operator = ($(selfname)_t *raw)
+    {
+        $(selfname)_destroy (&p);
+        p = raw;
+        return *this;
+    }
+.   endif
+.   if my.classtype = "refcounted"
+
+    $(selfname:camel) (const $(selfname:camel) &val)
+    {
+        p = val.p;
+        $(selfname)_possess (p);
+    }
+
+    $(selfname:camel) &operator = (const $(selfname:camel) &val)
+    {
+        $(selfname)_destroy (&p);
+        p = val.p;
+        $(selfname)_possess (p);
+        return *this;
+    }
+.   elsif my.classtype = "duplicable"
+
+    $(selfname:camel) (const $(selfname:camel) &val)
+    {
+        p = $(selfname)_dup (val.p);
+    }
+
+    $(selfname:camel) &operator = (const $(selfname:camel) &val)
+    {
+        $(selfname)_destroy (&p);
+        p = $(selfname)_dup (val.p);
+        return *this;
+    }
+.   elsif my.classtype = "unduplicable"
+
+    $(selfname:camel) (const $(selfname:camel) &val)
+    {
+        p = val.p;
+        icl_atomic_inc32 (&(p->refcount));
+    }
+
+    $(selfname:camel) &operator = (const $(selfname:camel) &val)
+    {
+        if (!icl_atomic_dec32 (&(p->refcount))) {
+            $(selfname)_destroy (&(p->p));
+            delete (p);
+        }
+        p = val.p;
+        icl_atomic_inc32 (&(p->refcount));
+        return *this;
+    }
+.   endif
+
+    inline
+    ~$(selfname:camel) ()
+    {
+.   if my.classtype = "unduplicable"
+        if (!icl_atomic_dec32 (&(p->refcount))) {
+            $(selfname)_destroy (&(p->p));
+            delete (p);
+        }        
+.   else
+        $(selfname)_destroy (&p);
+.   endif
+    }
+.   for method where name = "new" & !private
+.       if count(argument, !defined (prefill) & !defined (precalc)) = 0
+.           default_constructor = 1
+.       endif
+
+    $(selfname:camel) (\
+.       generate_method_wrapper (0)
+;
+.       if count (argument, type = "...") > 0
+    $(selfname:camel) (\
+.           generate_method_wrapper (1)
+;
+.       endif
+.   endfor
+
+    inline $(selfname)_t *
+    operator -> ()
+    {
+.   if my.classtype = "unduplicable"
+        return p->p;
+.   else
+        return p;
+.   endif
+    }
+
+    inline
+    operator $(selfname)_t* () const
+    {
+.   if my.classtype = "unduplicable"
+        return p->p;
+.   else
+        return p;
+.   endif
+    }
+.   for method where !private               & \
+                     name <> "new"          & \
+                     name <> "destroy"      & \
+                     name <> "possess"      & \
+                     name <> "link"         & \
+                     name <> "unlink"       & \
+                     name <> "new in scope" & \
+                     !(my.classtype = "duplicable" & name = "dup")
+
+    \
+.       if count (argument, name = "self") <> 1
+static \
+.       endif
+.       if returnt = "void"
+void
+.       else
+icl_info <$(expand(returnt))>::cpp_type
+.       endif
+    $(expand(name):camel) (\
+.       generate_method_wrapper (0)
+;
+.       if count (argument, type = "...") > 0
+
+    \
+.           if count (argument, name = "self") <> 1
+static \
+.           endif
+.           if returnt = "void"
+void
+.           else
+icl_info <$(expand(returnt))>::cpp_type
+.           endif
+    $(expand(name):camel)V (\
+.           generate_method_wrapper (1)
+;
+.       endif
+.   endfor
+
+protected:
+.   if my.classtype = "unduplicable"
+    struct proxy_t
+    {
+        qbyte refcount;
+        $(selfname)_t *p;
+    };
+    proxy_t *p;
+.   else
+    $(selfname)_t *p;
+.   endif
+private:
+.- disable default constructor as well if it is not defined explicitely in icl file
+.   if default_constructor = 0
+    $(selfname:camel) ();
+.   endif
+};
+
+inline icl_info<$(selfname)_t*>::c_type
+icl_info<$(selfname)_t*>::underlying (
+    icl_info<$(selfname)_t*>::cpp_type_ref t)
+{
+.   if my.classtype = "unduplicable"
+    return t.p->p;
+.   else
+    return t.p;
+.   endif
+}
+
+.endmacro
+
+.macro generate_class (class)
+.   prepare_to_generate ()
+.   if !defined (switches.quiet)
+.       echo "Generating $(selfname:c).hpp..."
+.   endif
+.   if    class.import = 1
+.      classtype = "import"
+.   elsif count (method, name = "new"     & !private) = 1 & \
+          count (method, name = "destroy" & !private) = 1 & \
+          count (method, name = "possess" & !private) = 1
+.      classtype = "refcounted"
+.   elsif count (method, name = "new"     & !private) = 1 & \
+          count (method, name = "destroy" & !private) = 1 & \
+          count (method, name = "possess" & !private) = 0 & \
+          count (method, name = "dup"     & !private) = 1
+.      classtype = "duplicable"
+.   elsif count (method, name = "new"     & !private) = 1 & \
+          count (method, name = "destroy" & !private) = 1 & \
+          count (method, name = "possess" & !private) = 0 & \
+          count (method, name = "dup"     & !private) = 0
+.      classtype = "unduplicable"
+.   elsif count (method, name = "new"     & !private) = 0 & \
+          count (method, name = "destroy" & !private) = 0 & \
+          count (method, name = "possess" & !private) = 0 
+.      classtype = "static"
+.   else
+.      classtype = "none"
+.   endif
+.   if class.name = "icl_destroy"
+.      classtype = "none"
+.   endif
+.   output "$(selfname:c).hpp"
+/*---------------------------------------------------------------------------
+    $(selfname:c).hpp - $(selfname:c) component wrapper in C++
+
+.   for doc
+.       output_doc (doc)
+.   endfor
+    Generated from $(arg?filename) by $(script) using GSL/4.
+.   if defined (copyright)
+    $(copyright:)
+.   endif
+.   $(set_final_license ())_license (" ")
+ *---------------------------------------------------------------------------*/
+
+.   if classtype <> "none"
+#if !defined($(selfname:UPPER)_PHASE) || $(selfname:UPPER)_PHASE==1
+#ifndef $(selfname:UPPER)_PHASE_1_INCLUDED
+#define $(selfname:UPPER)_PHASE_1_INCLUDED
+
+.      if classtype <> "import"
+#include "base.h"
+#include "icl_apr.h"
+#include "$(selfname).h"
+#include "icl_info.hpp"
+.      endif
+
+.      if classtype <> "static" & classtype <> "import"
+class $(selfname:camel);
+template <> struct icl_info <$(selfname)_t*>;
+.      endif
+
+.      for import
+.         importname = expand (import.class ? import.name)
+#ifndef   $(importname:UPPER,c)_PHASE_1_INCLUDED
+#define   $(importname:UPPER,c)_PHASE 1
+#include  "$(importname:c).hpp"
+#undef    $(importname:UPPER,c)_PHASE
+#endif
+.      endfor
+
+#endif
+#endif
+
+#if !defined($(selfname:UPPER)_PHASE) || $(selfname:UPPER)_PHASE==2
+#ifndef $(selfname:UPPER)_PHASE_2_INCLUDED
+#define $(selfname:UPPER)_PHASE_2_INCLUDED
+
+.      if classtype <> "static" & classtype <> "import"
+template <> struct icl_info<$(selfname)_t*>
+{
+    typedef $(selfname)_t* c_type;
+    typedef $(selfname:camel) cpp_type;
+    typedef $(selfname:camel)& cpp_type_ref;
+    typedef const $(selfname:camel) cpp_const_type;
+    typedef const $(selfname:camel) cpp_const_type_ref;
+    static inline cpp_type to_cpp_type ($(selfname)_t *t);
+    static inline c_type underlying (cpp_type_ref t);
+};
+.      endif
+
+.      for import
+.         importname = expand (import.class ? import.name)
+#ifndef   $(importname:UPPER,c)_PHASE_2_INCLUDED
+#define   $(importname:UPPER,c)_PHASE 2
+#include  "$(importname:c).hpp"
+#undef    $(importname:UPPER,c)_PHASE
+#endif
+.      endfor
+
+#endif
+#endif
+
+#if !defined($(selfname:UPPER)_PHASE) || $(selfname:UPPER)_PHASE==3
+#ifndef $(selfname:UPPER)_PHASE_3_INCLUDED
+#define $(selfname:UPPER)_PHASE_3_INCLUDED
+
+.      for import
+.         importname = expand (import.class ? import.name)
+#ifndef   $(importname:UPPER,c)_PHASE_3_INCLUDED
+#define   $(importname:UPPER,c)_PHASE 3
+#include  "$(importname:c).hpp"
+#undef    $(importname:UPPER,c)_PHASE
+#endif
+.      endfor
+
+.      if classtype <> "import"
+.         if classtype = "static"
+.            generate_class_body_static (class)
+.         else
+.            generate_class_body (class, classtype)
+.         endif
+.      endif
+
+.      if class.name = "icl_system"
+inline void IclInitialise (
+    int argc,
+    char *argv [])
+{
+    IclSystem::Initialise (argc, argv);
+    atexit (IclSystem::Terminate);
+}
+.      endif
+
+#endif
+#endif
+.   endif
+.   close
+.   if !defined (switches.quiet)
+.       echo "Generating $(selfname:c).cpp..."
+.   endif
+.   output "$(selfname:c).cpp"
+/*---------------------------------------------------------------------------
+    $(selfname:c).cpp - $(selfname) component wrapper implementation in C++
+
+.   for doc
+.       output_doc (doc)
+.   endfor
+    Generated from $(arg?filename) by $(script) using GSL/4.
+.   if defined (copyright)
+    $(copyright:)
+.   endif
+.   $(set_final_license ())_license (" ")
+ *---------------------------------------------------------------------------*/
+
+#include "$(selfname:c).hpp"
+
+.       if classtype <> "none"
+.           for method where name = "new" & !private
+
+$(selfname:camel)::$(selfname:camel) (\
+.       generate_method_wrapper_impl (0)
+.       if count (argument, type = "...")
+$(selfname:camel)::$(selfname:camel) (\
+.           generate_method_wrapper_impl (1)
+.       endif
+.           endfor
+.           for method where !private               & \
+                             name <> "new"          & \
+                             name <> "destroy"      & \
+                             name <> "possess"      & \
+                             name <> "link"         & \
+                             name <> "unlink"       & \
+                             name <> "new in scope" & \
+                             name <> "dup"
+
+.               if returnt = "void"
+void
+.               else
+icl_info <$(expand(returnt))>::cpp_type
+.               endif
+$(selfname:camel)::$(expand(name):camel) (\
+.               generate_method_wrapper_impl (0)
+.               if count (argument, type = "...")
+
+.                   if returnt = "void"
+void
+.                   else
+icl_info <$(expand(returnt))>::cpp_type
+.                   endif
+$(selfname:camel)::$(expand(name):camel)V (\
+.                   generate_method_wrapper_impl (1)
+.               endif
+.           endfor
+.       endif
+.    close
+.endmacro

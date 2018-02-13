@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<cml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.openamq.org/schema/cml cml.xsd"
+ xmlns="http://www.openamq.org/schema/cml"
+ version="1.0">
+<schema-reply name = "openamq.org/server" version = "1.0" status = "ok">
+   <class name = "broker" label = "Broker">
+      <field name = "name" label = "Broker name" />
+      <field name = "started" label = "Date, time broker started" />
+      <field name = "locked" label = "Broker is locked?" type = "bool" />
+      <field name = "datamem" label = "Memory used for all data" />
+      <field name = "bucketmem" label = "Memory used for messages" />
+      <field name = "messages" label = "Number of queued messages" type = "int" />
+      <field name = "consumers" label = "Number of queue consumers" type = "int" />
+      <field name = "bindings" label = "Number of queue bindings" type = "int" />
+      <field name = "exchange" label = "Message exchanges" type = "objref" repeat = "1" />
+      <field name = "queue" label = "Shared queues" type = "objref" repeat = "1" />
+      <field name = "connection" label = "Connections" type = "objref" repeat = "1" />
+      <field name = "config" label = "Configuration" type = "objref" />
+      <method name = "shutdown" label = "Shutdown broker">
+      </method>
+      <method name = "lock" label = "Prevent new connections">
+      <field name = "setting" label = "1|0" type = "bool" />
+      </method>
+      <method name = "verbose" label = "Show all queues">
+      <field name = "setting" label = "1|0" type = "bool" />
+      </method>
+   </class>
+   <class name = "exchange" label = "Exchange">
+      <field name = "name" />
+      <field name = "type" />
+      <field name = "bindings" label = "Number of bindings" type = "int" />
+      <field name = "messages_in" label = "Messages published" type = "int" />
+      <field name = "messages_out" label = "Messages routed" type = "int" />
+      <field name = "megabytes_in" label = "Megabytes published" type = "int" />
+      <field name = "megabytes_out" label = "Megabytes routed" type = "int" />
+      <field name = "binding" label = "Bindings" type = "objref" repeat = "1" />
+   </class>
+   <class name = "binding" label = "Binding">
+      <field name = "name" label = "Routing key" />
+      <field name = "arguments" label = "Binding arguments" />
+      <field name = "queues" label = "Number of queues" type = "int" />
+      <field name = "exclusive" label = "Exclusive binding?" type = "bool" />
+   </class>
+   <class name = "queue" label = "Message Queue">
+      <field name = "name" />
+      <field name = "pending" label = "Messages pending" type = "int" />
+      <field name = "exclusive" label = "Exclusive queue?" type = "bool" />
+      <field name = "client" label = "Client host name" />
+      <field name = "exchange_name" label = "Exchange name" />
+      <field name = "exchange_type" label = "Exchange type" />
+      <field name = "routing_key" label = "Routing key" />
+      <field name = "binding_args" label = "Binding arguments" />
+      <field name = "auto_delete" label = "Auto-deleted?" type = "bool" />
+      <field name = "consumers" label = "Number of consumers" type = "int" />
+      <field name = "messages_in" label = "Messages published" type = "int" />
+      <field name = "messages_out" label = "Messages consumed" type = "int" />
+      <field name = "megabytes_in" label = "Megabytes published" type = "int" />
+      <field name = "megabytes_out" label = "Megabytes consumed" type = "int" />
+      <field name = "drop_count" label = "Messages dropped" type = "int" />
+      <field name = "queue_connection" label = "Queue connections" type = "objref" repeat = "1" />
+      <field name = "queue_binding" label = "Queue bindings" type = "objref" repeat = "1" />
+      <method name = "purge" label = "Purge all queue messages">
+      </method>
+   </class>
+   <class name = "queue_connection" label = "Queue connection">
+      <field name = "name" label = "Connection name" />
+      <field name = "address" label = "Client IP address:port" />
+      <field name = "user_name" label = "User login name" />
+      <field name = "instance" label = "Client instance name" />
+      <field name = "started" label = "Date, time connection started" />
+      <field name = "messages_in" label = "Messages published" type = "int" />
+      <field name = "messages_out" label = "Messages consumed" type = "int" />
+      <field name = "megabytes_in" label = "Megabytes published" type = "int" />
+      <field name = "megabytes_out" label = "Megabytes consumed" type = "int" />
+      <field name = "product" label = "Reported client product name" />
+      <field name = "version" label = "Reported client version" />
+      <field name = "platform" label = "Reported client platform" />
+      <field name = "information" label = "Other client information" />
+      <field name = "trace" label = "Trace level, 0-3" type = "int" modify = "1" />
+      <method name = "kill" label = "Kill connection">
+      </method>
+   </class>
+   <class name = "queue_binding" label = "Queue binding">
+      <field name = "name" label = "Routing key" />
+      <field name = "exchange_name" label = "Exchange name" />
+      <field name = "exchange_type" label = "Exchange type" />
+      <field name = "binding_args" label = "Binding arguments" />
+      <field name = "exclusive" label = "Exclusive binding?" type = "bool" />
+   </class>
+   <class name = "connection" label = "Client Connection">
+      <field name = "name" label = "Connection name" />
+      <field name = "pending" label = "Messages pending" type = "int" />
+      <field name = "address" label = "Client IP address:port" />
+      <field name = "user_name" label = "User login name" />
+      <field name = "instance" label = "Client instance name" />
+      <field name = "started" label = "Date, time connection started" />
+      <field name = "messages_in" label = "Messages published" type = "int" />
+      <field name = "messages_out" label = "Messages consumed" type = "int" />
+      <field name = "megabytes_in" label = "Megabytes published" type = "int" />
+      <field name = "megabytes_out" label = "Megabytes consumed" type = "int" />
+      <field name = "product" label = "Reported client product name" />
+      <field name = "version" label = "Reported client version" />
+      <field name = "platform" label = "Reported client platform" />
+      <field name = "information" label = "Other client information" />
+      <field name = "trace" label = "Trace level, 0-3" type = "int" modify = "1" />
+      <field name = "connection_queue" label = "Connection queues" type = "objref" repeat = "1" />
+      <method name = "kill" label = "Kill connection">
+      </method>
+   </class>
+   <class name = "connection_queue" label = "Connection queue">
+      <field name = "name" />
+      <field name = "enabled" label = "Queue accepts new messages?" modify = "1" />
+      <field name = "exclusive" label = "Exclusive to one client?" type = "bool" />
+      <field name = "exchange_name" label = "Exchange name" />
+      <field name = "exchange_type" label = "Exchange type" />
+      <field name = "routing_key" label = "Routing key" />
+      <field name = "binding_args" label = "Binding arguments" />
+      <field name = "auto_delete" label = "Auto-deleted?" type = "bool" />
+      <field name = "consumers" label = "Number of consumers" type = "int" />
+      <field name = "pending" label = "Messages pending" type = "int" />
+      <field name = "messages_in" label = "Messages published" type = "int" />
+      <field name = "messages_out" label = "Messages consumed" type = "int" />
+      <field name = "megabytes_in" label = "Megabytes published" type = "int" />
+      <field name = "megabytes_out" label = "Megabytes consumed" type = "int" />
+      <field name = "dropped" label = "Messages dropped" type = "int" />
+      <method name = "purge" label = "Purge all queue messages">
+      </method>
+      <method name = "push" label = "Dispatch queue messages">
+      </method>
+   </class>
+   <class name = "config" label = "Configuration">
+      <field name = "name" label = "Configuration name" />
+      <field name = "port" label = "Server port for clients" type = "string" modify = "1" />
+      <field name = "listen" label = "Address (local network interface) to listen on" type = "string" modify = "1" />
+      <field name = "queue_timeout" label = "Timeout for auto-deleted queues" type = "int" modify = "1" />
+      <field name = "vhost" label = "Server vhost identifier" type = "string" modify = "1" />
+      <field name = "user" label = "User to run server as" type = "string" modify = "1" />
+      <field name = "group" label = "Group to run server as" type = "string" modify = "1" />
+      <field name = "monitor" label = "Monitor interval, seconds" type = "int" modify = "1" />
+      <field name = "dump_state" label = "Dump state interval, seconds" type = "int" modify = "1" />
+      <field name = "record_stats" label = "Record performance statistics" type = "bool" modify = "1" />
+      <field name = "log_path" label = "Active log file directory" type = "string" modify = "1" />
+      <field name = "keep_logs" label = "Keep log files" type = "bool" modify = "1" />
+      <field name = "archive_cmd" label = "Archive log file command" type = "string" modify = "1" />
+      <field name = "alert_log" label = "Error log file name" type = "string" modify = "1" />
+      <field name = "daily_log" label = "Daily log file name" type = "string" modify = "1" />
+      <field name = "debug_log" label = "Debug log file name" type = "string" modify = "1" />
+      <field name = "debug_route" label = "Debug message routing?" type = "bool" modify = "1" />
+      <field name = "debug_queue" label = "Debug queue activity?" type = "bool" modify = "1" />
+      <field name = "debug_peering" label = "Debug peering messages?" type = "bool" modify = "1" />
+      <field name = "debug_console" label = "Debug console I/O?" type = "bool" modify = "1" />
+      <field name = "trace" label = "Protocol trace level" type = "int" modify = "1" />
+      <field name = "syslog" label = "Use syslog logging protocol" type = "int" modify = "1" />
+      <field name = "coremark_cycles" label = "Duration of CoreMark test" type = "int" modify = "1" />
+      <field name = "heartbeat" label = "Heartbeat timer, seconds" type = "int" modify = "1" />
+      <field name = "setup_timeout" label = "Connection setup timeout, seconds" type = "int" modify = "1" />
+      <field name = "close_timeout" label = "Connection close timeout, seconds" type = "int" modify = "1" />
+      <field name = "accept_retry_timeout" label = "Timeout before retrying accept calls, seconds" type = "int" modify = "1" />
+      <field name = "polling_threads" label = "Number of polling OS threads" type = "int" modify = "1" />
+      <field name = "working_threads" label = "Number of working OS threads" type = "int" modify = "1" />
+      <field name = "tcp_nodelay" label = "TCP/IP NODELAY option" type = "bool" modify = "1" />
+      <field name = "tcp_rcvbuf" label = "TCP/IP receive buffer, in bytes" type = "int" modify = "1" />
+      <field name = "tcp_sndbuf" label = "TCP/IP send buffer, in bytes" type = "int" modify = "1" />
+      <field name = "frame_max" label = "Maximum size of AMQP content frames" type = "int" modify = "1" />
+      <field name = "direct" label = "Enables Direct Mode for client connections" type = "int" modify = "1" />
+      <field name = "private_credit" label = "Credit window for private queues" type = "int" modify = "1" />
+      <field name = "shared_credit" label = "Credit window for shared queues" type = "int" modify = "1" />
+      <field name = "backup" label = "Failover backup host:port" type = "string" modify = "1" />
+      <field name = "primary" label = "Failover primary host:port" type = "string" modify = "1" />
+      <field name = "failover_timeout" label = "Failover timeout, in seconds" type = "int" modify = "1" />
+      <field name = "attach" label = "Enable auto-federation to specified host" type = "string" modify = "1" />
+      <field name = "attach_vhost" label = "Auto-federation virtual host name" type = "string" modify = "1" />
+      <field name = "attach_login" label = "Auto-federation login user name" type = "string" modify = "1" />
+      <field name = "attach_all" label = "Auto-federate exchanges by pattern" type = "string" modify = "1" />
+      <field name = "batching" label = "Maximum size of Direct Mode batches" type = "int" modify = "1" />
+      <field name = "direct_heartbeat" label = "Heartbeat timer, seconds for Direct Mode" type = "int" modify = "1" />
+      <field name = "no_ack" label = "Do not implement acknowledgments" type = "bool" modify = "1" />
+      <field name = "auto_crash" label = "Auto-crash test timer, seconds" type = "int" modify = "1" />
+      <field name = "auto_block" label = "Auto-freeze test timer, seconds" type = "int" modify = "1" />
+      <field name = "kernel_limit" label = "SMT kernel limit" type = "int" modify = "1" />
+      <method name = "commit" label = "Save custom configuration file">
+      </method>
+      <method name = "rollback" label = "Restore previous configuration">
+      </method>
+   </class>
+</schema-reply>
+</cml>

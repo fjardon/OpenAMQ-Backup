@@ -1,0 +1,2231 @@
++ Unstable branch
+
+++ 1.4c0 - 2009/05/23
+
+* fixed: returned messages were not triggering wait end (http://www.openamq.org/issue:58)
+* added: WireAPI amq_client_session_wait () allows -1 timeout meaning 'polled' (http://www.openamq.org/issue:65)
+* added: if BOOM_NOTEST environment variable is 1, build.sh does not run regression tests (http://www.openamq.org/issue:64)
+* added: APR build is configurable via the environment (http://www.openamq.org/issue:62)
+* added: implemented acknowledgements on shared queues (Basic.Consume/no-ack, Basic.Ack) (http://www.openamq.org/issue:21)
+* added: --no-ack option to keep old behaviour in which no-ack is ignored
+* added: new WireAPI connection property "connection->id" holds unique connection ID string assigned by server
+* added: WireAPI option /config/sequence/set that sets Sender-Id and Timestamp on published messages
+* added: WireAPI option /config/sequence/check that verifies Sender-Id and Timestamp on received messages
+
+++ 1.4b3 - 2009/05/01
+
+* fixed: socket management layer was leaking socket descriptors
+* fixed: WireAPI Direct Mode layer was leaking connections (DAMQ-33)
+* fixed: WireAPI Direct Mode layer could abort at shutdown (AMQ-599)
+* changed: response to socket exhaustion improved (BASE2-312)
+* added: in amq_server console, you can see all bindings for a queue
+* added: in amq_server console, verbose option to see all private queues, must be superuser
+* added: --user and --group options to switch to unprivileged user
+* added: new option --accept-retry-timeout tunes server response to socket exhaustion (BASE2-312)
+
+++ 1.4b2 - 2009/04/22
+
+* fixed: failover detects attempt to connect to self as primary or backup (AMQ-597)
+* fixed: federation detects attempt to connect to self (--attach localhost) (AMQ-597)
+* fixed: server assertion on large direct mode messages (http://www.openamq.org/issue:53)
+* fixed: detect and reject attempts to declare durable queues (http://www.openamq.org/issue:54)
+* fixed: if icl_system_initialise() not called in client apps, iCL issues error.
+* fixed: checks channel-nbr from misbehaving clients (http://www.openamq.org/issue:44)
+* changed: Connection.Start 'id' property renamed to 'connection' for clarity
+* changed: log files are now written to /var/log/openamq (http://www.openamq.org/issue:48)
+* changed: removed archive_path from log file configuration (http://www.openamq.org/issue:48)
+* changed: saves message to panic.log in case of abort (http://www.openamq.org/issue:50)
+* changed: added --syslog support (--syslog option) (http://www.openamq.org/issue:51)
+* changed: cleaned up use of logging to work better with syslog
+* added: new Connection.Start property, 'identifier' is server process ID
+* added: regular expression exchange (http://www.openamq.org/issue:51, http://www.pcre.org)
+* added: amq.regexp is default regexp exchange
+* added: semi-active failover feature added (http://www.openamq.org/issue:21)
+* added: zyre: debug facility for RestMS processing.
+
+++ 1.4b1 - 2009/03/29
+
+* fixed: Basic.Consume sometimes failed: http://www.openamq.org/issue:52/
+* fixed: build on Windows failed on MSVC when InputDir path had spaces
+* fixed: renamed 'template' property in ipr_dict_table_file_save to make it C++ compatible
+* fixed: Zyre: content-type on new resources is now same as that of POST request
+* changed: Zyre: Slug: header replaced by 'name' attribute in document (RestMS spec change)
+* changed: Zyre: ETag calculation and now includes Content-Type (RestMS spec change)
+* changed: Zyre: error responses now sent as text/plain instead of text/html (RestMS spec change)
+* fixed: Zyre: eliminate 'client connection timed-out' messages (http://www.xitami.com/issue:3)
+* fixed: Zyre: fixed crash on unrecognized HTTP methods (http://www.xitami.com/issue:1)
+
+++ 1.4b0 - 2009/02/17
+
+* fixed: if server runs out of sockets, dies with clear error message (http://www.openamq.org/issue:45)
+* changed: apr updated to 1.3.3, apr-util updated to 1.3.4 (1.4, FOR-21, BASE2-305)
+* removed: legacy platforms from 'c' script (everything except "modern gcc system" and "AIX with CCNAME=xlc_r") (1.4, FOR-22)
+* changed: if CCNAME and CCOPTS are unset, 'c' script looks for gcc on PATH, if found assumes a modern system and uses gcc and pthreads, if not then exits with error (1.4, FOR-22)
+* changed: if CCNAME and CCOPTS are set, 'c' does no autodetection of anything (including libraries) and just uses the provided values ("you're on your own mode"). this is done to massively simplify logic in 'c' script (1.4, FOR-22)
+* changed: when using gcc, detect standard "modern" libraries and link with them if present (includes libcrypt) (1.4, FOR-22)
+* changed: default BOOM_MODEL for all POSIX platforms is st,release (1.4, FOR-22)
+* changed: default ALLOCATOR for release is direct, for debug is fat (1.4, FOR-22)
+* removed: lockfree allocator and support code from iCL (1.4)
+* changed: ST builds on POSIX now identical to MT builds except for -DBASE_THREADSAFE (1.4, FOR-22)
+* added: build system for Windows (VisualC 2008)
+
+++ 1.4a3 - 2009/02/06
+
+OpenAMQ:
+
+* fixed: crash in amq_content_basic_get_body() if content size was zero (http://www.openamq.org/issue:43)
+* fixed: amq_server_base.cfg now built into binary (http://www.openamq.org/issue:35)
+* added: console interface now shows bindings per exchange (http://www.openamq.org/issue:10)
+* added: ipr_config class now reports config files loaded (http://www.openamq.org/issue:34)
+* added: HTTP server checks Host: against ".", "..", and / characters
+* added: runs CoreMark performance test at startup (--coremark_cycles)
+* fixed: various Win32 compile errors and warnings
+
+Zyre:
+
+* fixed: implemented RestMS/0.2 specification, many additions to X5 web service
+* added: support for Digest-AMQP spec, with full test/demo case
+* added: portal for backend peering, digest-amqp spec and examples
+* added: in X5: access modules, driver modules, password management, digest auth
+
+++ 1.4a2 - 2008/12/30
+
+Zyre:
+
+* fixed: large POSTs did not work systematically (regression test failure)
+* fixed: assertion failure on nozzles (regression test failure)
+* fixed: JSON output for repeated items was incorrect.
+
+++ 1.4a1 - 2008/12/27
+
+Zyre:
+
+* fixed: Zyre asserted on normal connection close in RestMS Hello World test
+* added: support for RestMS-reply-to and RestMS-message-id headers on POST address and GET message
+* added: zyre_cml.pl example of remote OpenAMQ administration over HTTP
+* added: defines predefined OpenAMQ feeds at startup
+* added: added support for OpenAMQ "system" exchange type
+* fixed: occasional assert on message delivery to pipe due to died content
+* fixed: joins properly deleted if their feed is deleted
+* fixed: XML responses incorrectly used <zyre> instead of <restms> for root
+* added: implemented JSON support for RestMS responses via "Accept: application/json" header
+
+OpenAMQ:
+
+* fixed: console crashed when supplied malformed CML data.
+
+++ 1.4a0 - 2008/12/25
+
+All changes in 1.3c3 onwards plus:
+
+* added: IPR portals and made http server work with current base2
+* changed: removed rwlock from wireapi connection & session
+* added: --debug_route prints exchange creation and destruction (like queues)
+* added: amq_rest.asl class for RESTful access to server resources
+* fixed: PAL assert did not work with symbolic variables
+* changed: auto-named queues are now called "auto.nnn" instead of "#nnn"
+
++ Stable branch
+
+++ 1.3d0 - 2009/05/23
+
+* fixed: returned messages were not triggering wait end (http://www.openamq.org/issue:58)
+* added: WireAPI amq_client_session_wait () allows -1 timeout meaning 'polled' (http://www.openamq.org/issue:65)
+* added: if BOOM_NOTEST environment variable is 1, build.sh does not run regression tests (http://www.openamq.org/issue:64/)
+* added: APR build is configurable via the environment (http://www.openamq.org/issue:62)
+* added: implemented acknowledgements on shared queues (Basic.Consume/no-ack, Basic.Ack) (http://www.openamq.org/issue:21)
+* added: --no-ack option to keep old behaviour in which no-ack is ignored
+* added: new WireAPI connection property "connection->id" holds unique connection ID string assigned by server
+* added: WireAPI option /config/sequence/set that sets Sender-Id and Timestamp on published messages
+* added: WireAPI option /config/sequence/check that verifies Sender-Id and Timestamp on received messages
+
+++ 1.3c7 - 2009/05/03
+
+* fixed: socket management layer was leaking socket descriptors
+* fixed: WireAPI Direct Mode layer was leaking connections (DAMQ-33)
+* fixed: WireAPI Direct Mode layer could abort at shutdown (AMQ-599)
+* changed: response to socket exhaustion improved (BASE2-312)
+* added: --user and --group options to switch to unprivileged user
+* added: new option --accept_retry_timeout tunes server response to socket exhaustion (BASE2-312)
+
+++ 1.3c6 - 2009/04/22
+
+* added: semi-active failover feature added (http://www.openamq.org/issue:21)
+* fixed: server assertion on large direct mode messages (http://www.openamq.org/issue:53)
+* fixed: detect and reject attempts to declare durable queues (http://www.openamq.org/issue:54)
+* fixed: Basic.Consume sometimes failed: http://www.openamq.org/issue:52/
+* fixed: checks channel-nbr from misbehaving clients (http://www.openamq.org/issue:44)
+
+++ 1.3c5 - 2009/02/20
+
+* fixed: demo_content_class selftest died on Unix systems (AIX) (DAMQ-27).
+* fixed: version number in server was wrong
+* fixed: if server runs out of sockets, dies with clear error message (http://www.openamq.org/issue:45)
+
+++ 1.3c4 - 2009/02/05
+
+* fixed: crash in amq_content_basic_get_body() if content size was zero (http://www.openamq.org/issue:43)
+* fixed: malloc now aborts if the process runs out of memory (DAMQ-22)
+* fixed: amq_server_base.cfg now built into binary (http://www.openamq.org/issue:35)
+* fixed: aborts if peering credentials are not found (AMQ-595)
+* fixed: various Win32 compile errors and warnings
+* added: console interface now shows bindings per exchange (http://www.openamq.org/issue:10)
+* added: ipr_config class now reports config files loaded (http://www.openamq.org/issue:34)
+* added: -S command line option to snapshot config data
+
+++ 1.3c3 - 2008/12/17
+
+* added: support for AMQP/0.9.1
+* added: PAL scripts can now set command timeout in session
+* added: session->timestamp property indicating when session was opened
+* added: session includes tables returned by AMQP methods
+* added: latency measurement framework, see http://www.openamq.org/doc:user-3-advanced#toc36
+* added: when server takes action on queue overflow, displays client IP address in logs
+* fixed: SMT sockets crashed after constant use for 2^31 operations (BASE2-301)
+* fixed: PAL scripts did not free client config
+* fixed: queue deletion could crash on destroyed channel
+* fixed: Direct Mode did not handle mandatory and immediate (http://www.openamq.org/issue:36)
+* fixed: Basic.Publish 'immediate' functionality was broken since 1.3a
+* fixed: queue overflow code crashed on shared queues (DAMQ-18)
+* fixed: on slow networks, broker sometimes asserted on setup_timer destroy (DAMQ-19)
+* fixed: PAL crashed when receiving contents greated than 1024 large
+* fixed: Direct Mode lease management had thread safety issues
+* fixed: credit-based flow control in normal mode was not robust
+* fixed: WireAPI Direct Mode fixed to allow unlimited connections (AMQ-598)
+
+++ 1.3c2 - 2008/11/04
+
+* added: new header file wireapi.h for WireAPI applications (includes all needed headers)
+* fixed: log file naming did not work when name with no extension was specified
+* fixed: connections were not properly destroyed, causing memory leaks (AMQ-593)
+* fixed: packaging of 1.3c1 was screwed up, and did not include 1.3c1 fixes
+
+++ 1.3c1 - 2008/10/30
+
+* fixed: Basic.Cancel returned error if consumer did not exist, should return Cancel-Ok.
+* fixed: http://www.openamq.org/issue:32 fix caused WireAPI wait() to wait unduly (http://www.openamq.org/issue:33)
+
+++ 1.3c0 - 2008/10/21
+
+* fixed: mixing deliveries with sync methods confused WireAPI (http://www.openamq.org/issue:32)
+* fixed: Queue.Destroy was not working properly (http://www.openamq.org/issue:31)
+* fixed: zero-sized content crashes server & client (http://www.openamq.org/issue:30)
+* fixed: asl_field_list_dump () wrote into unallocated memory. (http://www.openamq.org/issue:29)
+* fixed: PAL did not allow nested repeat blocks (confused the counters).
+* fixed: amq_client.asl crashed when using default exchange (http://www.openamq.org/issue:28)
+* fixed: amq_server let applications delete pre-defined exchanges (http://www.openamq.org/issue:27)
+* fixed: in direct mode, queue & connection transfer statistics were not updated
+* Java JMS client moved to public git at http://github.com/pieterh/openamq-jms/tree/master
+
+++ 1.3b2 - 2008/10/09
+
+* amq_shell did not work with Direct Mode (http://www.openamq.org/issue:19)
+* Fixed loss of messages caused by Direct Mode heartbeating (http://www.openamq.org/issue:20)
+* Implemented warn/drop on Direct Mode for slow network links, using private queue config (http://www.openamq.org/issue:22)
+* Added WIREAPI_FAKESLOW environment variable to simulate slow network at client end (http://www.openamq.org/issue:22)
+* Fixed crash in content wire_get with malformed content (http://www.openamq.org/issue:24)
+* Improved amq_client test tool to report lost messages, if any, on interrupt
+* Improved amq_server --dump_state output to show direct messages in/out/sunk/fed
+
+++ 1.3b1 - 2008/10/03
+
+This update includes all fixes in 1.2d5.
+
+++ 1.3b0 - 2008/09/29
+
+This update includes all fixes in 1.2d3 and 1.2d4 as well as:
+
+* Implemented Direct Mode message batching, with a significant performance kick.
+* Direct Mode batching is configurable in wireapi.cfg and amq_server.cfg via config/direct/batching setting.
+* Added support for client-side high-water overflow in Direct Mode via config/tuning/on_overflow setting.
+* Fixed: consumer-tag was wrongly set in WireAPI for Direct Mode messages (http://www.openamq.org/issue:2)
+* Fixed: Direct Mode caused aborts in client applications at shut-down (http://www.openamq.org/issue:14)
+
+With slow clients, Direct Mode has the big advantage of holding messages in the client-side WireAPI queues, not at the server.  This means servers won't get overloaded by slow clients.  You can configure clients to handle abnormally large queues using similar semantics as the server-side queue limits (warn, drop, trim, kill).
+
+++ 1.3a1 - 2008/09/16
+
+This update includes all fixes in 1.2d2 as well as:
+
+* Protocol version was incompatible with 1.2d, fixed (http://www.openamq.org/issue:9).
+* Direct mode properly records input/output rates (trunk) (http://www.openamq.org/issue:11)
+* Added server-side credit-based flow control on private queues (when Direct Mode is not used)
+
+++ 1.3a0 - 2008/09/07
+
+* Added support for Direct Message Protocol (see http://wiki.amqp.org).
+* Added config/tuning/direct option to wireapi.cfg
+* Added config/tuning/direct option to server config (--direct 1 on cmdline)
+* In PAL, <session failover = "n"> option changed to seconds for consistency
+* In PAL, added <session direct = "1"> option to enable Direct Mode
+
++ Legacy branch
+
+++ 1.2e2 - unreleased
+
+* fixed: if server runs out of sockets, dies with clear error message (http://www.openamq.org/issue:45)
+
+++ 1.2e1 - 2009/02/05
+
+* fixed: malloc now aborts if the process runs out of memory (DAMQ-22)
+* fixed: amq_server_base.cfg now built into binary (http://www.openamq.org/issue:35)
+* added: ipr_config class now reports config files loaded (http://www.openamq.org/issue:34)
+
+++ 1.2e0 - 2008/12/17
+
+* fixed: queue deletion could crash on destroyed channel
+* fixed: SMT sockets crashed after constant use for 2^31 operations (BASE2-301)
+
+++ 1.2d8 - 2008/11/04
+
+* fixed: PAL code generation wrongly tried to set session->silent (property was deprecated)
+* fixed: log file naming did not work when name with no extension was specified
+* fixed: packaging of 1.2d7 was screwed up, and did not include 1.2d7 fixes
+
+++ 1.2d7 - 2008/10/30
+
+* fixed: Basic.Cancel returned error if consumer did not exist, should return Cancel-Ok.
+* fixed: http://www.openamq.org/issue:32 fix caused WireAPI wait() to wait unduly (http://www.openamq.org/issue:32)
+
+++ 1.2d6 - 2008/10/21
+
+* fixed: mixing deliveries with sync methods confused WireAPI (http://www.openamq.org/issue:32)
+* fixed: Queue.Destroy was not working properly (http://www.openamq.org/issue:31)
+* fixed: zero-sized content crashes server & client (http://www.openamq.org/issue:30)
+* fixed: asl_field_list_dump () wrote into unallocated memory. (http://www.openamq.org/issue:29)
+* fixed: PAL did not allow nested repeat blocks (confused the counters).
+* fixed: amq_client.asl crashed when using default exchange (http://www.openamq.org/issue:28)
+* fixed: amq_server let applications delete pre-defined exchanges (http://www.openamq.org/issue:27)
+
+++ 1.2d5 - 2008/10/03
+
+* allow signal to be registered by multiple threads (http://www.openamq.org/issue:16)
+* fixed error in WIREAPI_SILENT handling (http://www.openamq.org/issue:18)
+
+++ 1.2d4 - 2008/09/29
+
+* WireAPI Connection->silent property now taken from WIREAPI_SILENT environment variable if any
+* Fixed: documentation still referred to WIREAPI_VERBOSE variable, which was replaced by WIREAPI_SILENT
+* Improved internal server event flow between queues and protocol agents, using credit based flow controls.
+
+This change is designed to make the server more manageable when using very high message rates, and slow clients.  Prior to this change, messages were offloaded from message queues to protocol threads (for sending to clients), at full speed.  This meant that the configurable queue limits would never be reached, so server memory could grow to excess.  This change implements a credit-based flow control so that the bulk of messages will remain on the message queue, where they can be properly managed by the queue limit handling (e.g. discard old messages if queue is too full).
+
+++ 1.2d3 - 2008/09/25
+
+* Fixed rare server crash (BASE2-299)
+* Fixed failover logic in JMS client (JAMQ-125)
+
+++ 1.2d2 - 2008/09/16
+
+* Implemented Basic.Qos (http://www.openamq.org/issue:5)
+* Fixed use of C++ words in amq_queue.icl ('private') and amq_cml ('class') (http://www.openamq.org/issue:6)
+* Fixed error in topic routing key (foo.# matched fruit.bar) (http://www.openamq.org/issue:7)
+* Fixed setting of last routing key on binding (http://www.openamq.org/issue:12)
+* amq_queue reported bad client ip address on shared queues with no connections (http://www.openamq.org/issue:12)
+* Fixed amq_shell, which blocked when listing shared queues without consumers.
+* Improved internal assertion macros to provide more info in case of crashes (BASE2-296).
+* Fixed occasional server crashes caused by race condition on closing client connections (BASE2-298).
+* Fixed occasional server memory corruption in handling of Basic.Cancel-Nowait method (AMQ-589)
+* Added support for AMQP nowait methods in PAL scripting language.
+
+++ 1.2d1 - 2008/09/07
+
+* Session now accurately holds content exchange, routing-key, and consumer-tag.  (http://www.openamq.org/issue:2)
+* Fixed: on Windows the server crashed on startup if it could not resolve its own hostname.  (http://www.openamq.org/issue:3)
+* Fixed: High-availability would randomly break and fall into a split-brain mode where both nodes would accept application connections.  (http://www.openamq.org/issue:4)
+* Support for AMQP File, Stream, Tx, Dtx, Access, and Tunnel classes removed.
+* Fanout exchange did not properly accept bindings.  Fixed.
+
++++ Configuration file syntax changes
+
+* In wireapi config, renamed arrived_high_water/low_water to high_water/low_water.
+* In server config, /failover/failover_timeout changed to /failover/timeout.
+* In server config, removed /failover/monitor option, is now timeout divided by 2.
+* In server config, timeout defaults to 5 seconds instead of 1 second.
+* In server config, timeout verified to not exceed 60 seconds.
+
+++ 1.2d0 - 2008/06/05
+
+* The configuration syntax for failover functionality (formerly "cluster") has changed.  Please see http://wiki.openamq.org/user:3-advanced#toc28 for details.
+
+* New simplified semantics and automatic configuration for federation functionality.  The configuration syntax (formerly "cluster_mta") has changed.  Please see http://wiki.openamq.org/user:3-advanced#toc46 for details.
+
+* Stability and build fixes:
+ * JAMQ-116 - Assertion failure in C Client
+ * JAMQ-113 - Queue not deleted immediatly even when 'queue timeout' is set to zero
+ * JAMQ-109 - Intermitten latency as high as 30 seconds was observed in OpenAMQ
+ * JAMQ-67 - Fix some SMT errors
+ * FOR-19 - Cannot build on Mac OS/X
+ * BASE2-293 - Make client layer error reporting more controllable
+ * BASE2-292 - icl_smt.gsl does not expand variables in "async header" and "async footer" <private> blocks
+ * BASE2-290 - Add debugging support for config files
+ * BASE2-288 - Remove unused 'name' field from server connection properties
+ * BASE2-287 - Extend ASL contants class to include macros for soft/hard errors
+ * BASE2-286 - Change config file inheritence to allow entities without name attribute
+ * BASE2-284 - SMT gives warnings when compiled with G++
+ * BASE2-282 - ASL: Correct timeout handling during connection setup/teardown
+ * BASE2-207 - Implement native atomic operations for Linux/AMD64
+ * BASE-58 - OSX porting - smt dies horribly
+ * AMQ-584 - Improve logging/verbosity settings in amq_client_agent, amq_peer_agent
+ * AMQ-583 - unsafe initialisation in amq_failover can cause asserts or bad behaviour
+ * AMQ-582 - build.sh does not detect intermediate failures
+ * AMQ-579 - Change failover times to msec instead of sec
+ * AMQ-578 - Remove broker 'shake' command
+ * AMQ-577 - Remove the resources/max_memory_mb and resources/per_client options
+ * AMQ-576 - Clarify use of vhost identifier
+ * AMQ-575 - Simplify federation semantics
+ * AMQ-574 - ASL: server sends connection.open-ok before executing server_connection_open method
+ * AMQ-573 - HA timeout is hardcoded in code (10 seconds), should be configurable
+ * AMQ-571 - Apply queue limits systematically to all queues
+ * AMQ-570 - Delete queues immediately if queue-timeout is set to zero
+ * AMQ-569 - Topic exchange should route same message to same queue no more than one time
+ * AMQ-567 - Multiple instances of a single message delivered to the queue
+ * AMQ-564 - Reimplement MTA peering debugging
+ * AMQ-563 - Use 'exchange' in place of name for MTA configuration
+ * AMQ-562 - Use names instead of numbers for MTA modes
+ * AMQ-561 - Apply patch: --listen to set the address to listen on
+ * AMQ-560 - Routing key is lost when message passes MTA
+ * AMQ-559 - Headers exchange is not conformant with 0.9 spec for x-match
+ * AMQ-550 - Refactor server shutdown handling to close all connections cleanly
+ * AMQ-523 - Match blank routing key with the # binding key
+
+1.2c4 - 2007/09/04
+---------------------------------------------------------------------
+
+Summary of changes:
+
+Build and documentation fixes only, no changes to functionality.
+
+Full list of fixes:
+
+  BASE2-283    BASE2-277 changes break single threaded build
+
+    BASE-60    Boom: Enclose <set> values in quotes
+
+     FOR-18    PCRE: Inherit CCDEFINES from environment
+
+    AMQ-555    WireAPI: Documentation updates
+
+1.2c3 - 2007/08/24
+---------------------------------------------------------------------
+
+Summary of changes:
+
+The "packio" configuration option has been removed. This was a workaround to
+support systems without working scatter/gather socket I/O which is not
+necessary on any of our supported platforms (Linux, Solaris, Windows), and was
+causing other issues with the transport of large messages.
+
+The "poll_frequency" configuration option has been replaced by an adaptive
+algorithm that provides optimal performance without the need for tuning by the
+user.
+
+Known issues:
+  BASE2-282    ASL: Correct timeout handling during connection setup/teardown
+
+               Does not affect normal operation, only corner cases with
+               deliberately misbehaving clients.
+
+    AMQ-550    Refactor server shutdown handling to close all connections
+               cleanly
+
+               May cause the server to loop on shutdown in combination with
+               a misbehaving client (see BASE2-282), or cause issues with a
+               clean shutdown of peering connections. In either case, sending
+               the server a second SIGINT will cause it to shut down normally.
+
+    AMQ-553    Fanout exchange doesn't dispatch messages after binding
+               recreation
+
+    AMQ-554    Direct exchange doesn't work with empty routing key
+
+    JAMQ-78    Make heartbeat configurable for peering connections
+
+    JAMQ-97    The max_memory_mb broker setting is not functional when used
+               with the default direct allocator
+
+               Please do not rely on the max_memory_mb setting to limit the
+               total amount of memory used by the server, this is not currently
+               working correctly.
+
+None of the above should impact a normal production environment. We hope to
+release fixes for these with the "ultra-stable" OpenAMQ 1.2d0 release,
+tentatively scheduled for the 7th of September.
+
+Full list of fixes:
+  BASE2-279    Correctly set socket options (TCP_NDELAY, SO_SNDBUF, SO_RCVBUF)
+               in SMT/ASL
+
+  BASE2-280    ASL: remove packio
+
+    JAMQ-96    Kill command for certain connections doesnt work.
+               (Duplicate, already fixed in OpenAMQ 1.2c2 by JAMQ-87)
+
+  BASE2-277    Review SMT socket polling strategy (poll_frequency)
+
+  BASE2-281    SMT doesn't always trigger master thread when threads go idle
+
+    BASE-59    Add MT build support for AIX with xlc to 'c' script
+
+1.2c2 - 2007/07/19
+---------------------------------------------------------------------
+
+Internal prelease for testing before 1.2c3 public release.
+
+Summary of changes:
+
+JAMQ-87 is a refactoring of the ASL agent state machines, and either directly
+or indirectly fixes or obsoletes the fix for AMQ-542, AMQ-549, JAMQ-32,
+JAMQ-54, JAMQ-57, JAMQ-71, JAMQ-73, JAMQ-79, JAMQ-82 and JAMQ-83.
+
+As part of this refactoring we have explicitly removed support for more than
+one protocol channel on a connection, since there is no direct requirement for
+this and the code was problematic and untested.
+
+WireAPI and broker error handling and reporting is now greatly improved and
+more robust.  The generic "unexpected disconnection" message has been removed,
+and the broker and client will report the specific cause of disconnection
+(protocol error, network error, etc.).
+
+JAMQ-94 fixes some non-critical bugs in the way SMT handles error conditions on
+sockets, which were discovered during the work on JAMQ-87.
+
+IMPORTANT NOTES:
+
+A major improvement has been made to the way large message contents (>1 frame)
+are processed in the broker and WireAPI layers, which will result in better
+connection stability under high broker or client load.
+
+In order to take advantage of this, please ensure that you are running the
+broker with the "packio" setting turned *off*. The "packio" functionality is
+likely to be removed in the next release, since it interferes badly with
+multi-frame messages.
+
+The "read timeout" and "write timeout" broker and client configuration settings
+have been removed since they are no longer required.
+
+The WireAPI configuration file has been renamed from amq_wireapi.cfg to
+wireapi.cfg.
+
+The default "poll frequency" setting has been changed from 0 to 256, and the
+WireAPI configuration now also includes "poll frequency".  However, for correct
+behaviour, we encourage users to keep the default setting (256) and to *ensure*
+this setting is not manually set to 0.  We are testing a new polling algorithm
+which will completely replace "poll frequency" in the next release.
+
+Known issues:
+
+The broker shutdown process has been modified to initiate a clean shutdown of
+connections when the broker receives a SIGINT or SIGTERM. This has not yet been
+intergrated into the console shutdown code, and this change may have adverse
+impact on HA failover in situations where a failover is to be triggered by
+shutting down a running broker. We will evaluate the value of this change and
+provide a definite solution in the next release.
+
+Due to a programming error, the "tcp sndbuf" and "tcp rcvbuf" broker
+configuration settings have no effect.  This will be fixed in the next release.
+
+The documentation on www.openamq.org has not been updated to reflect the
+changes in this release.
+
+Full list of fixes:
+    AMQ-542    Handle invalid protocol version in protocol header correctly
+
+    AMQ-547    Wrong operator precedence assumed in amq_queue_message_count can
+               lead to crash
+
+    AMQ-548    Set packio default to 0
+
+    AMQ-549    AMQ client API not able to support more than single connection
+
+    BASE-57    OSX porting - smt 'thread_create' function name clash
+
+  BASE2-266    "new style" iterator lists are inconsistent with the rest of iCL
+               and should be removed
+
+  BASE2-268    Ctrl+C leads to looping forever
+
+  BASE2-269    Clean up PAL and add read function
+
+  BASE2-270    smt_signal has allocation (link) issues
+
+  BASE2-271    Remove support for nested contents
+
+  BASE2-273    Multiple calls to _destroy on sync objects don't handle links
+               correctly
+
+  BASE2-274    PAL scripts need to be able to set config options
+
+  BASE2-276    Client uses 100% CPU on SIGINT while attempting to connect
+
+  BASE2-278    Automate sharing of thread context
+
+     FOR-16    c.bat and pal.bat do not accept file names with extensions
+
+     FOR-17    apr_socket_opt_get: Implement APR_SO_ERROR
+
+    JAMQ-32    E: Illegal sequence: Write request follows Close request
+
+    JAMQ-54    ASL: Design flaw in heartbeat algorithm
+
+    JAMQ-57    ASL client layer: Fix heartbeat design flaws
+
+    JAMQ-71    Assertion failure at amq_server:
+               smt_socket_request_by_socket.c:935: smt_socket_request_by_socket_first_:
+               Assertion `self' failed.
+
+    JAMQ-73    Assertion with debug build - amq_server: icl_mem_fat.c:695:
+               icl_mem_fat_possess_: Assertion `self->tag == 0xFABB' failed.
+
+    JAMQ-79    Design error in client/server agent state machine can block SMT
+               engine when sending large contents
+
+    JAMQ-80    PAL: Add support for testing failover
+
+    JAMQ-82    C API needs to report shutdown event properly
+
+    JAMQ-83    amq_client_agent aborts if there are still pending contents in
+               input thread and session has already been closed
+
+    JAMQ-84    Need PAL to support generated contents larger than 2MB (the
+               current limit)
+
+    JAMQ-85    PAL: <repeat> no longer works outside of <session>
+
+    JAMQ-86    SMT: smt_os_thread in ACTIVE status not polling for socket input
+
+    JAMQ-87    SMT not calling thread catcher in all cases/ASL client trying to
+               do socket operations on closed socket
+
+    JAMQ-88    ASL: Remove read_timeout and write_timeout from client agent
+
+    JAMQ-90    Verify OpenAMQ 1.2 HA clustering code meets agreed requirements
+               for delivery
+
+    JAMQ-91    SMT: <default> functionality for a <state> not implemented
+               correctly
+
+    JAMQ-92    SMT: Add priority attribute to method definition
+
+    JAMQ-93    SMT: Allow a thread to register more than one signal with
+               smt_signal_register
+
+    JAMQ-94    SMT not handling poll returning APR_POLLIN with a combination of
+               APR_POLLERR or APR_POLLHUP on a socket
+
+    JAMQ-95    amq_server aborts with (smt_socket_request.c 536) Could not find
+               specified socket in poll list.
+
+1.2c1 - 2007/03/26
+---------------------------------------------------------------------
+
+This release fixes some interoperability problems with other AMQP 0.9
+implementations, and removes the dependency on libuuid which was causing
+build problems for some people (BASE2-267).
+
+Bugfixes:
+    AMQ-546    AMQP 0.9 interoperability fixes for OpenAMQ 1.2c1
+
+Changes:
+  BASE2-267    Change channel id to use 64-bit atomic sequence
+
+1.2c0 - 2007/03/15
+---------------------------------------------------------------------
+
+Initial Open Source release.
+
+IMPORTANT NOTE for users of previous releases:
+
+  This release is now AMQP 0.9 compliant.  This means that your old 1.0,
+  1.1 clients will *NOT* interoperate with this release and will need to
+  be rebuilt using new client libraries.
+
+  Also note that the library names and openamq/ directory structure have
+  changed, so if you are linking applications without the use of iMatix
+  Boom, you will have to update your build process.
+
+
+Bugfixes:
+    JAMQ-66    Use Queue.Unbind in MTA
+
+     FOR-14    Build system fixes for Solaris x86
+
+  BASE2-263    Bitrot: SMT single-threaded build is broken
+
+    JAMQ-74    ipr_str_matches: Incorrect buffer size allocated for converted
+               regexp can cause memory corruption
+
+  BASE2-264    smt_thread, smt_os_thread: Replace _status_e enumerated types
+               with #defines
+
+    JAMQ-75    Fix for JAMQ-51 introduced uninitialized use of variable in
+               amq_queue_basic.icl
+
+  BASE2-265    ASL: Incorrect code generation in asl_client.asl
+
+     FOR-15    Win32: Link with LIBRPCRT4.LIB to get UuidCreate
+
+    AMQ-537    Remove remains of old clustering code from v1.1
+
+
+Changes:
+   BASE2-74    Integrate native atomic operations available in Solaris 10
+
+  BASE2-262    Change default memory allocator to direct for some MT builds
+
+    BASE-55    Set default BOOM_MODEL to mt,release for Linux & Solaris
+
+    AMQ-539    Add channel-id and resume command to comply with AMQP 0-9
+
+  BASE2-258    Remove "alert" command from AMQP
+
+  BASE2-256    Add void field type to field tables
+
+    JAMQ-38    Add queue.unbind to protocol and server
+
+    AMQ-540    Implement field table within field table
+
+    AMQ-541    Change protocol version to 0.9
+
+1.1b5 - 2007/03/01
+---------------------------------------------------------------------
+
+Bugfixes:
+    JAMQ-72    Frame errors in Java client with new OpenAMQ_Server
+
+1.1b4 - 2007/02/19
+---------------------------------------------------------------------
+
+Bugfixes:
+    JAMQ-42    SEGFAULT in amq_server_connection_queue_unbind
+
+    JAMQ-67    Fix some SMT errors (catch-all issue for SMT stability
+  (BASE2-260)  problems found by sustained testing)
+
+    JAMQ-68    Make 'function' methods reject zombies in synchronous
+  (BASE2-259)  objects
+
+    JAMQ-69    Deadlock in amq_server_connection_exception
+
+    JAMQ-63    Solaris 5.8 version of Proxy AMQ Server core-dumps
+
+1.1b3 - 2006/12/13
+---------------------------------------------------------------------
+
+Bugfixes:
+    JAMQ-59    Publish messages on Proxy Server from local clients are not
+               passed onto clients connected to remote Broker
+
+1.1b2 - 2006/12/11
+---------------------------------------------------------------------
+
+Bugfixes:
+    BASE2-257  ICL: JAMQ-36 changes break ST build
+
+    JAMQ-43    SMT problem: assert (!thread->os_thread)
+
+    JAMQ-46    Console: 'top' command gives bogus output
+
+    JAMQ-49    ipr_str_matches: Bug in conversion of glob expression to regexp
+               could lead to incorrect matches
+
+    JAMQ-51    Broker dropping messages when channel flow is suspended
+
+    JAMQ-52    ipr_time_iso8601: timezone handling is broken
+
+    JAMQ-54    ASL: Design flaw in heartbeat algorithm (broker side fix only)
+
+    JAMQ-55    Broker: Throttle message flow on outgoing path (queue ->
+               connection threadlet -> TCP) (reporting fix only)
+
+Changes:
+
+    JAMQ-50    Replace hash table container with a more suitable algorithm
+
+    JAMQ-48    Provide option to clean up pending messages in queue
+               (implemented as profile= argument on queue.declare)
+
+Known issues:
+
+    * Client-side fix for JAMQ-54 will be in a future release
+
+    * Full fix for JAMQ-55 will be in a future release
+
+    * Correct functionality of JAMQ-48 change is dependent on a
+      full fix for JAMQ-55
+
+1.1b1 - 2006/10/31
+---------------------------------------------------------------------
+Note the version number change - the new clustering code will as of now
+use the 1.1 series.  This release has no functional changes in
+clustering from 1.0e0.
+
+Bugfixes:
+    JAMQ-36    Memory leaks due to incorrect use of APR pools
+  (BASE2-250)
+    JAMQ-33    Negative number of consumers on queue
+   (AMQ-529)
+    JAMQ-31    amq_server: smt_socket_request.c:836:
+  (BASE2-255)  smt_socket_request_destroy_: Assertion
+               `self->thread->pending_count' failed
+    JAMQ-22    Assertion failed: item->by_status_head == self, file
+               smt_thread_by_status.c, line 739
+
+Changes:
+    JAMQ-35    Remove message/traffic statistics from asl_broker
+  (BASE2-254)
+    JAMQ-34    Make destroying queues more efficient
+   (AMQ-534)   Also resolves: JAMQ-25, JAMQ-7
+    BASE2-252  Add random values to PAL
+    BASE2-251  PAL: Add -i option to clients to enable setting instance name
+               passed to server
+    AMQ-533    Move flow control to consumer
+    AMQ-532    Implement Client API flow control using channel.flow
+
+1.0e0 - 2006/09/25
+---------------------------------------------------------------------
+This is an initial release of the new high availability and briding
+functionality that replaces the old clustering implementation in OpenAMQ
+1.0c and 1.0d.
+
+This release incorporates all applicable bug fixes up to and including
+those in OpenAMQ 1.0d5.
+
+1.0d5 - 2006/09/25
+---------------------------------------------------------------------
+Bugfixes:
+    JAMQ-16    amq_server: amq_consumer_by_queue.c:1492:
+               amq_consumer_by_queue_count: Assertion `self' failed.
+
+1.0d4 - 2006/09/07
+---------------------------------------------------------------------
+Bugfixes (backport):
+    JAMQ-10    Server assertion failure at amq_console_agent.c:2646:
+               action_register: Assertion `hash' failed.
+    JAMQ-11    debugging message removed from this release
+    AMQ-527    console: Race condition accessing destroyed objects can cause a
+               server crash
+
+1.0d3 - 2006/08/04
+---------------------------------------------------------------------
+Bugfixes (backport):
+    JAMQ-9     amq_shell is missing certain features which are necessary for
+               monitoring individual connections.
+    AMQ-524    amq_console: "normal user attempted super-user function" message
+               should show client IP, instance name
+    AMQ-525    amq_console: Improve feedback when asked to manipulate objects
+               that have gone away
+    AMQ-526    Server needs to allow infinite read timeout when not
+               heartbeating (e.g. talking to ST clients)
+
+1.0d2 - 2006/07/20
+---------------------------------------------------------------------
+Bugfixes (backport):
+    JAMQ-9     amq_shell is missing certain features which are necessary for
+               monitoring individual connections.
+
+1.0d1 - 2006/06/08
+---------------------------------------------------------------------
+Bugfixes (backport):
+    JAMQ-4     Old queues are recreated on primary server after restart in
+               cluster mode.
+    JAMQ-2     Assertion failure on `self->object_tag == 0xFABB' in
+               amq_consumer_unlink_ at amq_consumer.c:1238
+    JAMQ-3     amq_shell does not display the correct start time of a
+               connection
+    JAMQ-1     server dumps while setting trace level using amq_shell
+
+Bugfixes:
+    AMQ-504    amq_shell does not display the correct start time of a
+               connection
+    BASE2-236  smt_thread item inserted into multiple queue containers
+
+1.0d0 - 2006/06/08
+---------------------------------------------------------------------
+Changes:
+    AMQ-512    The connection name of the client should be logged (along with
+               the ip) for any logging in server log regarding a particular client
+    BASE2-243  Optimise link/unlink operations in icl/smt objects
+    AMQ-509    Change server monitoring to reflect real network i/o
+    AMQ-458    Server-generated queue names need their own namespace
+    AMQ-465    Proposed protocol modification to improve startup/failover performance
+    AMQ-506    Changes for AMQP/0.7
+    AMQ-496    Dynamic logging to be implemented in server
+    AMQ-505    amq_shell should have an option to display only the instance
+               names for the connections and exit
+    AMQ-502    Split console functions into normal/super functions
+
+Bugfixes:
+    AMQ-513    Assertion failure at self->tag ==
+               ICL_CACHE_ALIVE,icl_mem_thin.h, line 548 while attempting failover
+    AMQ-511    Branch and deliver OpenAMQ 1.0c3 release with fix for  BASE2-236
+    AMQ-510    Assertion failure in file smt_thread_queue.c, line 760 for
+               item->queue_head == NULL
+    BASE2-241  Missing file license.gsl
+    AMQ-498    Missing link on amq_consumer object
+    AMQ-499    Remove dependency on external console schema file
+    BASE2-240  all pal clients abort with amq_client_agent.c:5602:
+               amq_client_agent_manager: Assertion `thread->manager ==
+               amq_client_agent_manager' failed.
+    BASE2-239  Types get converted to lower case, breaking 'Bool' declarations
+    BASE2-237  Hashed object tags causing problems in openamq
+    AMQ-507    perf_tests build failure
+    AMQ-503    OpenAMQ tests fail to build
+    AMQ-504    amq_shell does not display the correct start time of a connection
+
+
+
+1.0c3 - 2006/05/12
+---------------------------------------------------------------------
+
+Changes:
+     BASE-50    Upgrade to the latest version of ZLIB
+     BASE-48    Upgrade to latest version of PCRE
+     BASE-52    Move 'c' script into foreign package
+     AMQ-438    Don't send content body frame when body length is zero
+     BASE-51    Disable PCRE and ZLIB support in gsl3
+     AMQ-478    Improve topic performance
+     AMQ-470    Implement heartbeat in clients and servers
+     AMQ-469    Include routing key in summary for a queue
+     AMQ-468    Implement "-e" option for amq_shell; running shell commands
+     AMQ-467    Display hostname instead of ip in summary for a connection
+                shown by amq_shell
+
+Bugfixes:
+     AMQ-501    server segfault due to use of self->stats even if not
+                configured
+     AMQ-495    Tracing level cannot be set to 3 via amq_shell
+     AMQ-500    amq_shell unable to kill a connection
+     AMQ-489    Assertion failure at amq_server_agent.c:5638: s_write_payload
+     BASE2-234  Heavy socket activity causes timers to get delayed or lost
+     BASE2-235  ASL demo server/client broken
+     AMQ-486    Change log is not sent to primary after its restart
+     AMQ-485    Cluster reporting nonsense error after primary restart
+     AMQ-493    Cluster cannot be started because of authentication issues
+     AMQ-473    Cluster: After primary restart secondary server looks to
+                accept new connections, but is not able to route them for some
+                time (6 sec)
+     AMQ-472    Cluster disconnects when clients are disconnected unexpectedly
+     AMQ-492    With heartbeats of 5 seconds clients get disconnected after
+                some time
+     BASE2-233  Memory leaks in MT server build
+     FOR-13     apr-util/xml/expat/Makefile.in should not attempt to
+                regenerate configure
+     AMQ-491    With ALLOCATOR=direct , the server dumps at startup
+     AMQ-490    server dump in asl_log_agent_manager for RHAS4
+     AMQ-484    Authentication: PLAIN description in specification and
+                implementation on C broker is not compliant
+     AMQ-480    With default heartbeat settings clients are disconnected after
+                some time
+     BASE2-232  Race condition on writing history of unlink
+     AMQ-487    Server should provide provision for connection to have a name
+     AMQ-488    Heartbeat with ST clients can lead to slightly pathological
+                situations
+     BASE2-231  Make heartbeat code more clear
+     AMQ-464    cluster disconnects and reconnects by itself while running
+                grm_c tests
+     AMQ-479    Cluster controller should check common for invalid 'internal'
+                addresses
+     AMQ-471    Protocol change for SASL implementation
+     AMQ-475    What are the warning messages in AMQ server for limits being
+                reached?
+     AMQ-477    amq_shell has no option for providing vhost
+     AMQ-476    Cluster Mode: amq_consumer_table reaches its limit very soon
+                (csm=9725)
+     BASE2-230  smt_socket_request_monitor timeouts do not work correctly
+     AMQ-474    Windows build fails with 1.0c1 kit
+
+1.0c1 - 2006/04/19
+---------------------------------------------------------------------
+
+Changes:
+    AMQ-461     Review valid characters for queue names
+    AMQ-462     review topic matching algorithm (topic_to_regexp)
+    AMQ-332     Closing connection should destroy its exclusive queues
+    AMQ-459     Server should reject attempts to create queues using
+                server-generated queue names
+    AMQ-456     Add more tracing to console when shell sends invalid data
+    BASE2-58    ICL - icl_console_print and below needs tuning.
+    AMQ-435     Cluster should have internal and external connections
+    BASE2-221   Tracking objects that are freed too early (the mosquito
+                catcher)
+    AMQ-404     Client agent: Change to a design that uses a single queue to
+                communicate between threads
+    BASE-47     Add 'noopt' model to Boom
+    BASE-46     Add 'gprof' model to Boom
+    AMQ-434     server should validate cluster addresses
+    AMQ-425     Update the documentation for custom.cfg in Wiki
+    AMQ-436     Allow cluster balancing to be switched off
+    BASE2-54    Compile time option macros should be reviewed and standardised
+    BASE2-214   Simplify list option settings
+
+Bugfixes:
+    AMQ-463     Secondary server assertion failure while running GRM_C tests
+                in cluster mode
+    AMQ-448     Failover does not happen for some clients with multiple
+                resubscriptions under heavy load
+    AMQ-460     Topic exchange failing to route message.
+    AMQ-457     Failure to connect during mass start-up/connect.
+    BASE2-191   GSL string.replace function is not safe, allows memory
+                overwrite
+    BASE2-196   ipr_process waits forever when terminating
+    AMQ-450     Under heavy load the server cannot create new exclusive queues
+    AMQ-451     Assertion failure in server at ipr_bucket.c:931 in
+                ipr_bucket_dump
+    AMQ-454     amq_shell is not functional
+    AMQ-455     amq_client sometimes fails with assertion failure on content
+                header size
+    BASE2-226   SMT: Incorrect usage of condition variables
+    AMQ-453     Master election fails when backup is killed in 3-server
+                cluster setup (split brain issue)
+    AMQ-452     amq_server does not unlink amq_peer_list when started with
+                unknown clustername
+    AMQ-437     Shorten server-generated queue names
+    BASE2-222   demo_client_config_tests fails in the build process
+    BASE2-224   SMT sometimes not registering socket (disconnection) events
+                immediately
+    AMQ-449     Secondary server asserts after primary bounce during clustering
+    AMQ-432     Server looping forever
+    AMQ-443     Cluster is *not* reestablished after bouncing primary
+    AMQ-444     Cluster gets disconnected when clients are stopped
+    AMQ-415     When many clients are connected, some get arbitrarily
+                disconnected
+    AMQ-445     Freed Memory Reads and Writes with the default (thin?)
+                allocator.
+    AMQ-427     Server loops forever when failovered from primary to backup in
+                cluster
+    AMQ-446     cluster debug output shows wrong count on opteron
+    AMQ-440     Missing link on amq_consumer object
+    AMQ-442     Broker core-dumps practically as soon as the first client
+                connects.
+    BASE2-225   Broker frequently crashes on win32 with error in
+                smt_socket_request
+    BASE2-213   Delete/regen generated containers automatically
+    BASE2-206   Format of 'thread' argument in animation is wrong
+    BASE2-220   ipr_hash_insert: programming error (not 64-bit clean)
+    BASE2-204   Server hangs on shutdown
+    AMQ-428     Dangling connections
+    AMQ-423     Assertion `self->thread' failed in primary server when
+                restarting in a cluster
+    AMQ-429     Assertion failed on self->links > 0 in amq_consumer_unlink_
+    AMQ-430     SEGFAULT after backup server being restarted
+    AMQ-426     Make provision to specify the location of the custom.cfg while
+                starting server
+    BASE2-223   logfiles written on disk get the wrong filename
+    AMQ-344     Let the server know the client is suspended.
+    BASE-45     Add gurudoc filter for ODF (OpenOffice)
+
+1.0c0 - 2006/03/16
+---------------------------------------------------------------------
+Changes:
+
+    AMQ-418     Rename server & client configuration files
+    AMQ-417     Broker should warn about unknown elements in server.cfg
+    BASE2-219   iCL objects should check they are valid, in all methods
+    AMQ-413     Tighten use of zombied objects
+    AMQ-403     Add option to disable server logging
+    BASE2-201   Remove pre-writable poll-check.
+    AMQ-390     OpenAMQ to log msgs in and out separately.
+    FOR-12      Disable epoll/kqueue/port implementations of apr_pollset_poll
+    AMQ-389     Make TCP socket kernel/stack I/O queue-sizes configurable.
+    AMQ-385     amq_shell should have a command line option (-q) to show all
+                queues in the server and exit
+    AMQ-377     Change / remove limit on object store
+    FOR-1       Implement read buffering for sockets in APR
+    AMQ-380     Clean-up bindings when possible
+    AMQ-387     Add no-op comment switch to amq_server command line
+    AMQ-349     Get consumer destruction process to order
+    BASE2-192   Tighter control over generation of links code
+    BASE2-179   _destroy method should be replaced by _unlink method
+    AMQ-378     Review #calls to ipr_regexp_eq from amq_server_method_decode
+    BASE2-190   Reduce number of calls to apr_os_thread_current
+    BASE2-184   Make object history conditional
+    BASE2-188   Turn container object counting off by default
+    BASE2-187   Improve threadlet scheduling
+    BASE-43     Remove 'nice' from c script
+    BASE2-189   Remove optimisation in _link method
+    BASE-42     Remove 'nice
+    BASE2-186   Reduce calls to apr_time_now
+    AMQ-223     Logging: allow logging level to be changed dynamically
+    AMQ-287     Strategy for no-local consumers
+    AMQ-308     Strategy for queue limits
+    BASE2-182   Increase server listen queue size
+    BASE2-181   Optimised use of atomic operations
+    AMQ-362     Add server garbage collection function to console (amq_shell)
+    AMQ-358     Remove memory garbage collection function (recycler)
+    AMQ-357     Improve server memory management
+    AMQ-353     If server reaches memory limit, slow down publishers
+    AMQ-359     Dump-state function must not become completely silent
+    AMQ-343     slow down SMT
+
+Bug Fixes:
+
+    AMQ-414     Server dumps core when many clients are killed in quick
+                succession
+    AMQ-422     amq_vhost is sometimes 0x0 making a cluster crash on
+                amq_peer_disconnect
+    AMQ-424     Assertion `consumer' failed when a client tries to register
+                197+ services
+    AMQ-421     Secondary server dumps when primary is killed in a cluster
+    AMQ-408     dangling queues when client disconnects
+    AMQ-420     assertion failed when restarting primary server in cluster
+    AMQ-400     Queues and Messages are not getting cleaned up
+    AMQ-419     Server aborts with message Assertion `self->tag == 0xFabbU'
+                failed when lots of clients disconnect
+    BASE2-218   SMT does not build single-threaded
+    AMQ-412     Server segfaults when closing connection (rare)
+    AMQ-416     Race condition when sending methods to connection thread
+    BASE2-211   smt_socket_request.by_socket_next is sometimes invalid making
+                the server segfault
+    BASE2-215   Aliasing warnings in icl_mem_lockfree.h
+    BASE2-212   Invalid data access (rwlock) in smt_thread_destroy
+    AMQ-411     Error in cluster causes crash when clients connect to it
+    AMQ-410     Infinite loop when connecting to cluster
+    AMQ-409     Invalid access in s_get_next_consumer when closing client conn
+    AMQ-383     Broker crashes when some of the clients are stopped
+    AMQ-405     Destroyed consumers are still getting message deliveries
+    AMQ-406     AMQ windows build fails
+    BASE2-203   asl_log_print_v produces wrong output.
+    AMQ-397     Creating more connections and/or queues slows down the server
+    BASE2-193   Server shutdown is *very* slow
+    BASE2-194   Assertion failed: self, file smt_signal_table.c, line 664 (at
+                SIGINT)
+    BASE2-195   ipr_bits_test aborts with Bus Error
+    AMQ-396     server crashes on amq_server_channel_destroy_
+    AMQ-401     AMQ crashes if server.cfg can't be found
+    AMQ-392     Server dumps in clustering mode for grm_c tests
+    AMQ-398     Server should not start on a default port if specified port is
+                in use
+    AMQ-399     Client API handling of "method sent on closed channel -
+                discarded" needs to be improved
+    BASE2-172   Trace of poll() calls show some unusual activity
+    AMQ-402     When consumer is created on closing channel, server crashes
+    BASE2-202   SMT occasionally crashes when threads are destroyed
+    BASE2-199   Enable memory history in debug builds
+    AMQ-393     amq_console_test leaks memory
+    AMQ-324     Spending lots of time in apr_pool_cleanup_kill.
+    BASE2-198   ASL client layer 'wait' method does not work as expected
+    BASE2-197   Assertion failure in s_execute on ST build
+    BASE2-171   Link function not generated
+    BASE2-185   Race condition on SMT shutdown
+    AMQ-375     Server gets slower and slower while creating high number of
+                queues
+    AMQ-394     When multiple C subscribers are run, some publish messages are
+                sent to the client more than once
+    AMQ-391     Server asserts with binding issue
+    AMQ-388     Channel.flow-Ok method is being rejected by client as 'invalid'
+    AMQ-371     queues are not getting deleted even after the application is
+                exited
+    AMQ-347     Secondary server dumps with "unrecognised event" for clustering
+    AMQ-382     Write simple C clients to test server latency with a single
+                publisher/multiple subscribers scenario
+    BASE2-169   amq_server_channel_test -q core-dumps (stops the build)
+    BASE-44     Gurudoc PDF formatting errors
+    AMQ-374     Messages lost with a fast publisher and bit slower subscriber
+    AMQ-365     Server log generated with 'dump state' enabled, shows that
+                some messages are not deleted
+    AMQ-379     kernel reports number of exchanges wrongly
+    FOR-11      Foreign does not build on win32
+    AMQ-376     Failure to test for linking to zombie
+    BASE2-183   Race condition on object unlink methods
+    AMQ-361     'Expected a content header frame' error occuring unexpectedly
+    AMQ-325     Implement dump state signal handler
+    AMQ-368     Change memory display to show number of bytes allocated, not Mb
+    AMQ-370     Logging: cycle log files automatically each night at midnight
+    AMQ-373     Assertion when running grm/c tests
+    AMQ-372     assertion failed on amq_server_agent.c:20890:
+                action_send_basic_deliver: in Server
+    AMQ-369     Move all trace output onto new logging system
+    AMQ-345     secondary server core dumps for clustering
+    AMQ-364     Secondary server core dumps once primary is bounced during
+                clustering
+    BASE2-151   Logging: build logging manager
+    AMQ-366     Change auto_ack to no_ack
+    BASE-41     tr in boomake does not uppercase BOOM_MODEL variables
+    AMQ-367     Access violation during queue unbinding
+    BASE2-178   icl_rwlock heap corruption
+    AMQ-360     Broker not delivering messages when a consumer sends itself an
+                initialisation message.
+    AMQ-350     Queues not being auto-deleted
+    AMQ-356     Use old-style list for list of queues in vhost
+    AMQ-352     Busy consumers are being treated as absent, for immediate
+                messages
+    AMQ-333     When a queue exceeds configured limit, the queue is never
+                emptied and number of messages in the queue remains there for
+                ever
+    AMQ-351     Pal doesn't compile with constant string values in <if> and
+                <assert> statements
+    AMQ-348     Queued messages not delivered to a client that starts after
+                they were sent until a new message is sent
+
+
+1.0b0 - 2006/02/14
+---------------------------------------------------------------------
+Bug Fixes:
+
+
+    AMQ-240   Invoking lock on broker via AMQ console does not update the
+              locked property
+    AMQ-307   Production server's output claims it's the test release.
+    AMQ-326   Queues not properly deleted, leading to "server out of memory"
+              errors
+    AMQ-329   Server reports "smt_method inserted into multiple containers"
+    AMQ-330   Server does not detect when it talks to itself (on cluster)
+    AMQ-331   Server dumps with "unrecognised event" in cluster mode when
+              grm_c tests are run
+    AMQ-334   Auto-named queues are not cluster-safe
+    AMQ-335   Assertion failure in amq_cluster_agent.c
+    AMQ-342   Server core dumped while attempting failover
+    BASE2-167 ipr_log.icl is missing
+
+Changes:
+
+
+    AMQ-102   .NET API required over AMQ
+    AMQ-14    Design and implement server "operational control"
+    AMQ-22    Rework AMQ requirements documentation
+    AMQ-274   Implement structured contents
+    AMQ-284   Clustering: implement queue browsing (Get method)
+    AMQ-328   Get reference counting on amq_queue to order
+    AMQ-337   Channel.Flow should be a synchronous method
+    AMQ-338   Clustering protocol class needs better version protection
+    AMQ-339   Add technical settings to OpenAMQ configuration
+    AMQ-98    Thread-safety profiling
+    BASE-39   perl on RHAS3 can't compile htmlpp.txt inside base
+    BASE-40   Remove verbose output from Gurudoc postscript generation
+    BASE2-141 Implement no-copy socket read-ahead in SMT
+    BASE2-152 links attribute is not inherited
+    BASE2-158 Implement range of polling strategies in SMT
+    BASE2-159 Allow SMT socket polling strategy to be configurable
+    BASE2-160 Allow application control over technical settings
+    BASE2-164 Object animation needs class name
+    BASE2-166 Possession does not work with containers
+    BASE2-168 unlink method calls $(selfname)_destroy instead of
+              $(base)_destroy
+    BASE2-173 Make hash function more uniform (performance issue)
+    BASE2-66  Standardise command-line switches for Base2 applications
+    FOR-10    Disable sqlite3 when building ST
+    FOR-10    Disable sqlite3 when building ST
+
+1.0a4 - 2006/02/03
+---------------------------------------------------------------------
+Bug Fixes:
+
+    AMQ-176   JMS layer is closing the consumer after receiving a message
+              bounce.
+    AMQ-296   Clustering: root synchronisation failures
+    AMQ-303   "monitor server status" option gives wildly different results
+              with different monitor intervals
+    AMQ-310   When server is started on invalid port, the process does not
+              exit correctly
+    AMQ-312   base2/asl does not build due to function signature difference
+    AMQ-315   amq_server goes into an infinite when you pass it command-line
+              options.
+    AMQ-316   auto_delete queues do not appear to get deleted
+    AMQ-317   Queue deletion does not show queue name
+    AMQ-319   Consumers not correctly destroyed when client disconnects
+    AMQ-322   Client sends a bind request before receiving response for
+              Queue.Declare
+    BASE-37   Boom makefile generation is slightly broken
+    BASE2-157 char escaping in <doc> sections in opf files
+    BASE2-165 icl doesn't build ST
+    BASE2-167 ipr_log.icl is missing
+
+Changes:
+
+    AMQ-113   Build protocol kernel test suite
+    AMQ-238   Additional OpenAMQ feature required to satisfy JPMC Permit To
+              Build
+    AMQ-271   Implement configurable queue limits
+    AMQ-280   Clustering: specify protocol proxying standard
+    AMQ-283   Clustering: implement connection redirection in JMS client
+    AMQ-290   Create separate repository for OpenAMQ JMS Client
+    AMQ-304   Implement configurable timeouts on reads/writes
+    AMQ-306   Improve StdC synchronisation
+    AMQ-309   PAL: Provide a way to start the clock at a specific point in the
+              script
+    AMQ-311   Improve server command-line interface and help
+    AMQ-318   Implement auto-crash, auto-block function in server
+    BASE-38   smttime.c: Remove use of cast expressions as lvalues
+    BASE2-140 Allow vector write to sockets in SMT
+    BASE2-142 SMT should not handle signals when it is used to implement a
+              library
+    BASE2-144 Add support for user-defined signals
+    BASE2-161 Automatic method destructor for async objects
+    BASE2-163 Improved error reporting in iCL containers
+
+Known bugs:
+
+    - Queue deletion is not working correctly, due to a link/possess issue.
+    - Queue browsing across clustered servers not yet implemented.
+
+1.0a3 - 2006/01/24
+---------------------------------------------------------------------
+Bug Fixes:
+
+    AMQ-237   A  no-local consume will not get non-local publishes if a
+              previous local publish was sent
+    AMQ-276   Server background option does not work
+    AMQ-288   Connection refused no longer received on JMS/MINA 0.9
+    AMQ-289   Build fails despite correcting faulty  jars
+    AMQ-294   JMS/MINA will not reconnect to a different host
+    AMQ-301   ConnectionRedirectMethodHandler expects a no-longer-existent
+              port variable on ConnectionRedirectBody
+    BASE-34   Builds on windows take a very long time (e.g. 2.5 hours)
+    BASE-35   EOL conversion in 'boom distsrc' breaks binary files in source kits
+    BASE2-146 when pal starts a server, it doesn't wait for it to be ready
+    BASE2-147 when pal could not  connect to server, it tries to kill it, but
+              is unsuccessfull
+    BASE2-149 SMT test programs lock-up.
+    BASE2-150 SMT assertion failure
+    BASE2-154 icl_console.c - date format char array overrun
+    BASE2-155 Async objects don't handle timer events on shutdown
+
+Changes:
+
+    AMQ-103   Build C++ client API
+    AMQ-270   Implement IANA assigned port number for AMQP
+    AMQ-273   JMS must provide a way to configure the immediate and mandatory
+              flags for created producers
+    AMQ-275   Clustering: allow manual configuration of  topology
+    AMQ-279   Remove cluster-key concept and replace by virtual host
+    AMQ-281   Clustering: implement connection redirection in server
+    AMQ-282   Clustering: implement connection redirection in StdC client
+    AMQ-285   Clustering: implement informational heartbeats between peers
+    AMQ-286   Clustering: inform client of all known servers
+    AMQ-291   Protocol changes for 1.0 - clustering
+    AMQ-293   Add option to dump server status at regular intervals
+    AMQ-297   Implement configurable memory reallocation function
+    BASE-22   Extend boom to handle multiple product profiles
+    BASE2-148 Look for configuration data on the path
+    BASE2-153 Implement  object tracker class
+
+Tests:
+
+    AMQ-278   Profile 1.0 stdc client over 0.9 client
+
+1.0a2 - 2006/01/12
+---------------------------------------------------------------------
+
+Bug Fixes:
+
+    AMQ-267   Does not implement queue limits correctly
+    AMQ-268   Server sends incorrect close sequence if queue declare failed
+    AMQ-266   compile of routing key failes sometimes
+    BASE2-145 Content of <public> block in iCL being enclosed in extern "C" {}
+              causes MSVC to fail sometimes
+    AMQ-263   Server dumps when processing channel.close
+
+
+1.0a1 - 2006/01/10
+---------------------------------------------------------------------
+
+Bug Fixes:
+
+    AMQ-260    No-local consumers do not work
+    AMQ-257    Clustering: not routing messages correctly betweens secondary nodes
+    AMQ-256    Regression Tests fail for Windows build with 9d1
+    AMQ-246    amq_client_session_arrived returns one message a time
+    AMQ-244    PAL script leaves allocations after exception handling
+    BASE2-143  icl_console.c uses invalid data format string according to visual studio 2005
+
+Changes:
+
+    AMQ-262    Clustering: implement consumers across cluster
+    AMQ-259    Change consumer tag assignment
+    AMQ-205    Clustering: build prototype implementation
+    AMQ-131    Server user guide (basic)
+    AMQ-222    Record server-side disconnects such as time-outs with their reason/cause. Configurable time-outs.
+    AMQ-242    Server log does not show the date
+    AMQ-197    Remove the JMS class and expand the Basic class semantics
+
+Other issues:
+
+    AMQ-261    Can 1.0a0 be used in a non-cluster mode?
+
+
+1.0a0 - 2006/01/05
+---------------------------------------------------------------------
+Remarks:
+    This is an alpha release of OpenAMQ-1.0
+
+Bug Fixes:
+
+    AMQ-246    amq_client_session_arrived returns one message a time
+
+Changes:
+
+    AMQ-253    Update JMS layer for 1.0 protocol changes
+    AMQ-251    Improved handling for queue overflow
+    AMQ-252    Server shows internal message rate
+    AMQ-239    Broker should accept connections by management console when
+               locked
+    AMQ-250    Plain authentication is now configurable
+    AMQ-249    Improvements to stdc client and broker tracing
+    AMQ-248    Add clustering support to Stdc API
+    AMQ-247    Protocol changes for 1.0 - clustering
+    AMQ-236    Update COM component to work with latest server version
+               Configurable time-outs.
+
+0.9d1 - 2006/01/02
+---------------------------------------------------------------------
+Bug Fixes:
+
+    AMQ-222    Record server-side disconnects such as time-outs with their
+               reason/cause
+    AMQ-244    PAL script leaves allocations after exception handling
+    AMQ-242    Server log does not show the date
+    AMQ-243    Server not accepting new connections after run under heavy load
+    AMQ-161    icl_mem_fat.xml output of long running client and server
+    AMQ-208    assertion failure in icl_longstr_eq, comparing two null strings
+    AMQ-209    Need investigation into assertion: assert (index <
+               IPR_BITS_SIZE_BITS) in ipr_bit
+    AMQ-211    Need investigation into assertion: ipr_index.c:283 assert
+               (index > 0 && index < IPR_INDEX_MAX);
+    BASE2-115  smt_method_queue_wait is returning too early
+    BASE-32    The trace in 'c' is missing several $'s
+    BASE-29    AMQ COM object doesn't build with MSVC 7.0
+    BASE2-139  icl_mem cannot be used with C++
+
+Changes:
+
+    AMQ-242    Server log does not show the date
+    AMQ-197    Remove the JMS class and expand the Basic class semantics
+    AMQ-239    Broker should accept connections by management console when
+               locked
+
+0.9d0 - 2005/12/15
+---------------------------------------------------------------------
+Bug Fixes:
+
+    AMQ-234    GRMJ is no longer working with the current server/JMS
+    AMQ-228    Server hangs on startup on win32
+    AMQ-229    the server MUST accept a blank exchange name to mean the
+               default exchange.
+    AMQ-230    Multiple problems in makesrc.gsl
+    AMQ-221    Harden AMQ Server (and possibly client?) to broken clients and
+               peers i.e. protocol errors.
+    AMQ-226    Server crashes when client compiled with old version is run
+               against it
+    AMQ-216    exchange creation contains a possible race condition
+    AMQ-170    Broker does not appear to deal with concurrent request fairly
+               leading to starvation
+    BASE2-130  Regression tests hang when building on win32
+    BASE2-137  smt_os_thread loops endlessly at while (last_interrupt == 0);
+    BASE2-135  SMT code generation breaks when BASE_WATCH is used
+    BASE2-133  ipr_time_test fails on Win32
+    BASE2-134  Change kernel messages. Reading => Read
+    BASE2-131  ipr_time doesn't build under Windows
+    BASE2-110  Does SMT balance reads and writes?
+
+Changes:
+
+    AMQ-187    Protocol changes for 0.9d
+    AMQ-201    Add an "insist" option to the connection.open method
+    AMQ-202    Add a Connection.Redirect method.
+    AMQ-204    Add a "capabilities" field to the Connection.Open method.
+
+0.9c7 - 2005/11/25
+---------------------------------------------------------------------
+Bug Fixes:
+
+     AMQ-213   too many bindings on one of the default queues.
+     AMQ-190   Build Process fails in Regression tests for Solaris
+     AMQ-199   Rename the "bounce" method to "return".
+     AMQ-215   Server will dump core when trying to use a non-existent system
+               exchange (e.g. amq.undeclared)
+     BASE2-131 ipr_time doesn't build under Windows
+     BASE2-113 PAL: server destruction on abort
+     BASE2-99  Redesign APR pool usage to be thread safe
+     BASE2-128 Detecting race conditions on async object creation
+
+Changes:
+
+     AMQ-214   the server should wait a little longer before accepting
+               connections
+     AMQ-210   AMQConsole: use ISO8601 format to represent date
+     AMQ-200   Add an "arguments" field table to the queue.declare and
+               exchange.declare methods
+     AMQ-56    Starting to test JMS/AMQ using the jms cts test harness
+     FOR-9     Migrate foreign project to use vendor branches
+     BASE2-127 icl_longstr comparison should allow null references
+
+0.9c6 - 2005/11/25
+---------------------------------------------------------------------
+Bug fixes:
+
+     AMQ-191   Queue.Bind is causing an assertion failure
+     BASE2-126 Increase ipr_bits limit (currently 8k)
+
+0.9c5 - 2005/11/23
+---------------------------------------------------------------------
+Bug fixes:
+
+    AMQ-132   Regression tests fail: amq_server_channel_test hangs
+    AMQ-189   The JMS layer is reading negative timestamps (and possibly other
+              protocol values) from server
+    AMQ-188   In some very specific cases, the server will stop delivering
+              messages to some of the registered subscribers
+    AMQ-186   Memory leak in amq_server_connection
+    AMQ-178   amq_client reporting misleading.
+    AMQ-141   AMQ server core dumps while GTW GUI testing
+    AMQ-140   Queue-purge kernel pal test case fails with 'No reply received -
+              timeout'
+    AMQ-181   AMQ server does not handle illegal connection headers correctly
+    AMQ-179   AMQ documentation: inconsistency in queue.declare documentation
+    AMQ-118   Unitialised Memory Reads (UMRs) in amq_client
+    AMQ-134   Broker appears to do nothing when it should have work to do
+              before kicking in after a few seconds
+    BASE2-118 SMT method queues are not waiting correctly
+    BASE2-117 Bool should be a native type
+    BASE2-102 Client hangs on pthread_join
+    BASE2-112 server restart in pal doesn't work as expected
+    BASE2-113 PAL: server destruction on abort
+    BASE2-109 icl_destroy.h doesn't compile
+    BASE2-108 Apparent bug in win32 MT code (new)
+    BASE2-111 pal generated code does not return correct value ($?)
+    BASE2-105 SMT Regression tests hang when building on win32
+    BASE2-96  XML classes are deadlocking
+    BASE2-92  icl_mem_fat_possess_: Assertion `self->tag == 0xFabbU' failed.
+    FOR-6     APR process control is broken on win32
+    FOR-7     pthread rwlocks hang on write lock
+    BASE-24   Gurudoc PDF process destroys ascii art that uses backslashes
+    BASE-25   Avoid clashing of object files for C and C++ during the build
+
+Changes:
+
+    AMQ-41    Virtual host implementation
+    AMQ-173   Create default binding for all queues
+    AMQ-172   Implement default exchange
+    AMQ-171   Remove 'scope' concept from queue methods
+    AMQ-16    Automate build of AMQ and it's dependencies
+    AMQ-168   Add xml schema attributes to cml
+    AMQ-145   Console: implement alpha version
+    AMQ-156   Rename Browse to Get in the protocol specification
+    AMQ-153   Write test cases to thrash creation/destruction of objects in
+              server
+    AMQ-169   Differentiate between console request and response element names
+              to allow stricter message validation
+    BASE2-67  Add const option to arguments
+    BASE2-114 PAL - allow all protocol constants to be used in script.
+    BASE2-107 Change the way, includes are done in container classes
+    BASE2-101 PAL: Add support for timers
+    BASE2-104 PAL: Progress indicator for loops
+    BASE-27   Make GSL output a more meaningful error message
+    BASE-26   Building individual targets by boom
+    BASE-20   Allow iCL classes to be compiled to C++
+    BASE-13   Support multiple test environments in 'boom test'
+
+
+0.9c4 - 2005/11/08
+---------------------------------------------------------------------
+Bug fixes:
+
+    AMQ-166   test_console trashes ram and lockups my workstation
+    AMQ-141   AMQ server core dumps while GTW GUI testing
+    AMQ-165   Broker locks up when running request/reply benchmark on Solaris
+    AMQ-162   Server does not shut down cleanly after running test_console
+    AMQ-155   Improve error propagation and cleanup code in JMS client
+    BASE2-92  icl_mem_fat_possess_: Assertion `self->tag == 0xFabbU' failed.
+    BASE2-93  Creating/destroying large numbers of async objects causes
+              problems at exit
+    BASE2-103 Client or Brokers get into 'inactive' state.
+    BASE2-90  client aborts
+    BASE2-97  Compilation error in icl.h
+    BASE2-98  segfault when ST client connects to MT server in
+              smt_method_queue_wait
+
+Changes:
+
+    AMQ-169   Differentiate between console request and response element names
+              to allow stricter message validation
+    AMQ-168   Add xml schema attributes to cml
+    AMQ-164   The last change to AMQSession (for AMQ-160) breaks GRM Java
+              request/reply wiring
+    AMQ-167   Console does not include type details in all field elements in
+              schema definition
+    AMQ-143   Systematic client breakage test
+    AMQ-153   Write test cases to thrash creation/destruction of objects in
+              server
+    AMQ-163   Simplify AMQ Console schema
+    AMQ-156   Rename Browse to Get in the protocol specification
+    BASE2-81  Allow step limit for SMT threads
+
+0.9c3 - 2005/10/31
+---------------------------------------------------------------------
+Bug fixes:
+
+    AMQ-140  Queue-purge kernel pal test case fails with 'No reply received -
+             timeout'
+    AMQ-154  server assert amq_console_destroy
+    AMQ-132  Regression tests fail: amq_server_channel_test hangs
+    AMQ-152  JMS does not build
+    AMQ-151  AMQ doesn't buid
+    AMQ-149  RFC 006 does not document exchange type names accurately
+    AMQ-117  Memory Leaks
+    AMQ-137  Client Aborts
+    AMQ-115  amq_client: memory leak on server abort
+    AMQ-133  Build hangs on win32
+    AMQ-43   Multiple bounces for single message
+    AMQ-121  Pal basic queue bind test case works for jms class but not for
+             basic class
+    BASE2-95 Link counting is failing in certain cases
+    BASE2-83 Free Memory Read and (less signififcant) memory leaks.
+    BASE2-92 icl_mem_fat_possess_: Assertion `self->tag == 0xFabbU' failed.
+    BASE2-90 client aborts
+    BASE2-84 SMT appears to accept arbitrary signals
+    BASE2-87 queue free + queue insert race corrupts memomy
+    BASE2-85 Client session methods that accept content should not destroy it
+    BASE2-77 icl_console cannot print pointers
+
+Changes:
+
+    AMQ-145  Console: implement alpha version
+    AMQ-147  Add implementation of jms cancel method
+    AMQ-148  Alter jms.consume method to use consumer tag
+    AMQ-93   Define XML language for operational control
+    AMQ-92   Define operable properties per operable object
+    AMQ-91   All operable server objects need an external ID
+    AMQ-139  Change names that clash with C++ keywords
+    AMQ-135  Update AMQP protocol documentation on openamq.org
+    AMQ-129  Implement queue.declare-ok queue and consumer counts
+    AMQ-128  Clustering: finish draft clustering proposal
+    AMQ-90   Move virtual host selection to connection.open, from channel.open
+    BASE2-89 PAL scripts need to be able to run arbitrary commands
+    BASE2-91 Content class should be able to write content body to a file
+    BASE2-88 Allow async objects to define local static functions
+    BASE2-72 Reduce number of speculative poll() calls
+    BASE2-86 PAL scripts need to be able to send formatted content
+    BASE2-78 Switch off memory pools so that malloc & free are used.
+    BASE2-82 Make inserted XNF code appear after <insert> tag
+    BASE2-80 Allow PAL scripts to stop/start the server
+    BASE2-76 Changes to PAL for test automation
+    BASE2-79 PAL assert, echo blocks don't accept newlines
+
+0.9c2 - 2005/10/21
+---------------------------------------------------------------------
+Bug fixes:
+
+    -  AMQ-112, AMQ-116, AMQ-119, AMQ-124, AMQ-123, AMQ-122, AMQ-120
+    -  BASE2-73, BASE2-75
+
+0.9c1 - 2005/18/11
+---------------------------------------------------------------------
+
+Improvements:
+
+  - Updated JMS layer.
+
+Bug fixes:
+
+  - BASE2-70, BASE2-71
+
+0.9c0 - 2005/10/11
+---------------------------------------------------------------------
+
+Changes:
+
+  - Queue names, scope, and router names can now contain dots.
+  - Virtual host selection moved from session.open to connection.open
+    method.
+  - Auto-destroy queues can now be deleted immediately (in server.cfg,
+    queue_timeout = "0").
+  - Implemented AMQP content-abort mechanism (marked by content body
+    frame of size 1 = frame-end).
+  - "destination" protocol field renamed to "routing-key"
+  - new XML-based AMQP scripting language (PAL) for test scenarios.
+  - "dest" exchange class renamed to "direct".
+  - standard exchanges are now: amq.direct, amq.topic, amq.match,
+    amq.reply, amq.system, and amq.system.alert.
+
+Bug fixes:
+
+  - AMQ-108, AMQ-107, AMQ-106, AMQ-105, AMQ-104, AMQ-99, AMQ-88, AMQ-77
+
+0.9b14 - 2005/10/04
+---------------------------------------------------------------------
+
+Bug fixes:
+
+  - AMQ-37, AMQ-47, AMQ-52, AMQ-61, AMQ-68, AMQ-97, AMQ-101
+  - BASE-11, BASE2-68, BASE2-69, BASE2-14
+
+0.9b13 - 2005/09/29
+---------------------------------------------------------------------
+
+Bug fixes:
+
+  - AMQ-78, AMQ-71, AMQ-82, AMQ-95, BASE-8, BASE-10.
+
+0.9b12 - 2005/09/22
+---------------------------------------------------------------------
+
+Bug fixes:
+
+  - GRM-57
+
+0.9b11 - 2005/09/21
+---------------------------------------------------------------------
+
+Bug fixes:
+
+  - GRM-55
+
+0.9b10 - 2005/09/21
+---------------------------------------------------------------------
+
+Changes:
+
+  - AMQ-76, AMQ-83
+
+Bug fixes:
+
+  - AMQ-84
+
+---------------------------------------------------------------------
+0.9b9 - 2005/09/20
+
+Improvements:
+
+  - Custom configuration file, "custom.cfg", holds local definitions that
+    override the default values in server.cfg.  Do not edit server.cfg
+    but instead, create/edit custom.cfg (with same format) and holding
+    only values you need.  E.g., to disable monitoring:
+
+    <config>
+    <resources monitor = "0" />
+    </config>
+
+Bug fixes:
+
+  -  AMQ-33, AMQ-87, AMQ-85, AMQ-86, AMQ-13, AMQ-49, AMQ-79, AMQ-81, AMQ-51,
+     AMQ-68
+  -  BASE2-62, BASE2-9, BASE2-56, BASE2-60, BASE2-57, BASE2-61, BASE2-59,
+     BASE2-53, BASE2-52
+
+---------------------------------------------------------------------
+0.9b8 - 2005/09/15
+
+Improvements:
+
+  - Server monitors and reports own performance:
+    - messages per second rolling average
+    - messages per second peak throughput
+  - Queue and exchange names now allow hyhens ([A-Za-a0-9_-]+)
+
+Bug fixes:
+
+  - Connection timeout during large message transfer increased from
+    10s to 100s.
+  - Frame size in client kernel API restricted to 64k.
+
+  - AMQ-68, AMQ-40, AMQ-76, AMQ-70, AMQ-69, AMQ-72, AMQ-75
+  - BASE2-31, BASE2-37
+
+---------------------------------------------------------------------
+0.9b7 - 2005/09/13
+
+Bug fixes:
+
+  - Frame limit extended to 2MB
+
+---------------------------------------------------------------------
+0.9b6 - 2005/09/13
+
+Improvements:
+
+  - Temporary increase of frame-max to 1Mb to allow 512k messages
+    used by pilot application, and pending multiframe support from
+    JMS API.
+
+Bug fixes:
+  - Frame limit extended to 2MB
+
+---------------------------------------------------------------------
+0.9b6 - 2005/09/13
+
+Bug fixes:
+
+  - AMQ-7, AMQ-66, AMQ-67, AMQ-70
+  - BASE2-36, BASE2-21, BASE2-55
+
+---------------------------------------------------------------------
+0.9b5 - 2005/09/09 - 111k lines
+
+Bug fixes:
+
+  - AMQ-60, AMQ-61, AMQ-62, AMQ-63, AMQ-64
+  - BASE2-23, BASE-5, BASE2-48, BASE2-49, BASE2-50
+
+---------------------------------------------------------------------
+0.9b4 - 2005/09/07 - 99k lines
+
+Improvements:
+
+  - added self-test of significant classes to openamq build process.
+  - implemented consumer 'exclusive' option.
+  - header exchange now allows empty arguments, meaning "all messages".
+
+Bug fixes:
+
+  - Jira AMQ-48, BASE2-44, BASE2-46, BASE2-11, BASE2-47, AMQ-48, AMQ-53,
+    AMQ-52, AMQ-47, BASE2-45, BASE2-43, AMQ-46, AMQ-45.
+
+---------------------------------------------------------------------
+0.9b3 - 2005/09/01 - 94k lines
+
+Improvements:
+
+  - amq_client shows queue name in trace output.
+  - added message bounces to queue verbosity (tracing option).
+  - implemented queue 'private' option.
+  - implemented queue 'auto-delete' option.
+    - private queues are automatically deleted when connection closes.
+    - <verbosity trace_queue now traces queue creation/destruction.
+    - auto_delete queues are now automatically deleted when consumer leaves.
+      - deletion happens after configurable timeout
+       - server.cfg: <server queue_timeout = "30" />
+  - server now refuses new connections and messages when it reaches the
+    predefined memory limit (specified in server.cfg).
+
+Bug fixes:
+
+  - Jira AMQ-39, BASE2-41, BASE2-39, AMQ-40
+
+---------------------------------------------------------------------
+0.9b2 - 2005/08/31 - 93k lines
+
+Improvements:
+
+  - Support added for large message contents (limited only by available
+    memory).
+  - Server implements auto-named queues (for temporary queues).
+  - New stress testing tool implemented (amq_stress).
+
+Bug fixes:
+
+  - Jira AMQ-11, AMQ-5, AMQ-28, AMQ-27, BASE2-29, AMQ-31, BASE2-28.
+
+---------------------------------------------------------------------
+0.9b1 - 2005/08/24 - 89k lines
+
+Improvements:
+
+  - Implemented the "headers" exchange class (for header-field routing).
+  - Predefined "$match" (headers class) exchange.
+
+Changes:
+
+  - Renamed "dest_name" exchange class to "dest".
+  - Renamed "dest_wild" exchange class to "topic".
+
+Bug fixes:
+
+  - Jira BASE2-30, BASE2-26, BASE2-12
+
+---------------------------------------------------------------------
+0.9b0 - 2005/08/21 - 101k lines
+
+Improvements:
+
+  - Added 'server_properties' field to Connection.Start method.
+  - Added 'client_properties' field to Connection.Start-ok method.
+  - The server now correctly announces itself to clients.
+  - amq_client_connection object has these new properties:
+      - server_product
+      - server_version
+      - server_platform
+      - server_copyright
+      - server_information
+  - Server displays client information in diagnostic messages
+  - Server and C/C++ client use single system call to write messages
+
+Bug fixes:
+
+  - Jira BASE2-6, BASE2-7, BASE2-8
+  - Jira AMQ-6, AMQ-8
+
+---------------------------------------------------------------------
+0.9a3 - 2005/08/18 - 87k lines
+
+Improvements:
+
+  - Exchange, queue, and scope names are now validated in the
+    Declare methods.  These names may now contain only [A-Za-z0-9_].
+    System objects (predeclared) start with $.
+  - Removed template field from queue.declare method. Templating
+    will be done using the domain value.
+  - Queue "domain" field renamed to "scope".
+  - Predefined "$queue" (dest-name) and "$topic" (dest-wild) exchanges.
+  - Implemented the "dest-wild" exchange (for topic-style routing).
+  - Added option to trace exchange and queueing workflow, configurable
+    in server.cfg.
+  - OpenAMQ kernel, C/C++ client now uses new Base2 object reference
+    framework.
+  - C/C++ client API made much more robust its internal queues.
+
+Bug fixes:
+
+  - C/C++ client API was not working in single-threaded builds - fixed.
+  - Server leaked memory if interrupted after all connections closed.
+  - Improved socket tracing display in server.
+  - In rare cases when consumer disconnected, server would continue to
+    send it messages, causing memory leaks - fixed.
+  - C client agent sometimes tried to write to destroyed queue, causing
+    abort - fixed.
+  - Cancelling a consumer failed often, due to error in server channel
+    class - fixed.
+  - Server leaked memory if client did not close channel correctly
+    - fixed.
+  - Client was not reporting errors that it detected on server methods
+    - fixed.
+  - "no-local" function in server was broken - fixed.
+  - C/C++ client layers did not handle server errors correctly - fixed.
+
+---------------------------------------------------------------------
+0.9a2 - 2005/08/08 - 67k lines
+
+  - Destination field moved out of content header, into publish/deliver
+    and browse-ok methods.
+  - Modified client API to be SASL-compliant (pass auth_data block)
+  - Generate protocol constants from ASL specifications
+    - asl_constants.asl
+    - can be inherited and extended
+    - generates asl_constants.icl class
+
+---------------------------------------------------------------------
+0.9a1 - 2005/08/04 - 57k lines
+
+  - Server channels redesigned as async objects for better stability
+  - Channel.Flow method modified - takes "Active" parameter (true/false)
+
+---------------------------------------------------------------------
+0.9a0 - 2005/08/01 - 55k lines
+
+  - Initial alpha release of new server and async clients.
+
+---------------------------------------------------------------------
+0.8d6 - 2005/06/22
+  Protocol:
+    - in HANDLE OPEN, 'service-type' flag removed.
+    - 'service-type' flag added to HANDLE SEND and HANDLE CONSUME commands.
+    - added 'any' service type for HANDLE SEND only.
+    - server replies HANDLE CREATED only for auto-named dynamic queues.
+  Server:
+    - implements protocol changes noted above.
+    - detects and reports invalid field tables in all places.
+    - incorrectly generated two hits for a topic message field with no value
+        - fixed.
+
+0.8d5 - 2005/06/08
+  Server:
+    - new command line option, -m does monitoring of queue activity
+    - new consumers on paused handle are now also paused
+    - no-ack option on consumers sometimes caused queue jams - fixed
+    - amq_sclient_agent: collects "handle created" for dynamic queues
+    - matching engine did not initialise correctly (crashed) - fixed
+    - matching on topics was broken - fixed
+    - if config file missing or invalid, now reports an error
+
+0.8d4 - 2005/06/03
+
+  Protocol:
+    HANDLE CONSUME:
+        'exclusive' flag allows exclusive consumer
+        destination name can be empty - server generates a name
+        server always replies HANDLE CREATED when queue is created
+    HANDLE OPEN:
+        'temporary' flag removed.
+
+  Server:
+      - removed all temporary queue infrastructure.
+      - supports "auto-named" dynamic queues
+
+0.8d3 - 2005/06/03
+
+  Server:
+      - deletes temporary queues when owner handle closes
+
+0.8d2 - 2005/06/02
+
+  Server:
+      - new code for handling topic subscriptions
+      - topic names are now fully dynamic (no configuration needed)
+      - server catches channel/handle IDs 0, which are illegal
+
+0.8d1 - 2005/06/02
+
+  Server:
+      - deletes dynamic queues when last consumer goes away
+      - framing code did not properly free memory after a framing error
+      - fixed consume command confirmation, which came after notifies,
+        rather than before
+      - same for handle unget, handle flow, and channel ack
+      - when last consumer leaves dynamic queue, queue is purged
+      - all topic messages now held in single vhost queue
+      - added content-based routing
+        HANDLE CONSUME:
+            selector specifies fields (and optional values)
+        HANDLE SEND
+            matching is done on field presence and/or field value equality
+      - topics now created entirely dynamically
+  Protocol:
+      - destination name no longer specified at HANDLE OPEN time
+        - fully specified in HANDLE SEND, HANDLE CONSUME, and HANDLE QUERY
+  Clients:
+      - agnostic/stdc client updated to latest protocol version
+
+0.8d0 - 2005/05/31
+
+  - added new functionality to AMQP/0.8 protocol
+    HANDLE CONSUME:
+        'dynamic' flag allows dynamic queue creation
+        'selector' flag changed from string to table
+        'mime-type' field removed.
+    HANDLE SEND:
+        'streaming' flag removed.
+        'immediate' flag verifies that destination has consumers.
+    HANDLE NOTIFY:
+        'streaming' flag removed.
+  - server implements dynamic queues
+  - server implements immediate flag on HANDLE SEND
+  - stdc clients upgraded for these changes
+     - chat test clients act as test for dynamic/immediate
+
+0.8c5 - 2005/05/09
+
+ - correct packaging of 0.8c4
+
+0.8c4 - 2005/05/08
+
+ - fixed build problems under Windows.
+
+0.8c3 - 2005/05/06
+
+ - fixed Sparc bus errors
+
+0.8c2 - 2005/04/28
+
+ - added matching test program, first implementation of matching code.
+ - matching on topic name now implemented in server.
+pfe
+0.8c1 - 2005/04/26
+
+ - porting to Solaris/sparc (APR changes)
+
+0.8c0 - 2005/04/16
+
+Changes to server kernel:
+
+  - started implementation of topics.
+
+Changes to client kernel:
+
+  - kernel client layer now supports topic destinations.
+
+0.8b4 - 2005/04/14
+
+Changes to server kernel:
+
+  - login/password validation was broken due to error in amq_field class,
+    fixed.
+
+  - amq_queue class broken into class hierarchy: amq_mesgq, amq_dest,
+    amq_queue, amq_topic, and amq_subsc.
+
+  - 'core' project renamed to 'kernel'.
+
+  - removed NONE security mechanism; all clients must now login correctly.
+
+0.8b3 - 2006/04/07
+
+Changes to server:
+
+  - Server deletes (old) unused queue backing files at startup.  Previously
+    these were left in the data subdirectory.
+
+  - Destination backing files now given unique name (using a simple hash).
+    Previously two queues ("a-b", "a/b") could map to the same backing
+    file name.
+
+  - Destinations can now be configured using templates.  This lets you
+    tune large numbers of destinations (e.g. topics) by modifying a single
+    template.  The "default" template is used by default for normal
+    destinations, and "temporary" for temporary destinations.
+
+Changes to clients:
+
+0.8b2 - 2005/04/06 - internal
+
+  - server now creates and opens queue persistence files 'lazily',
+    allowing pure in-memory queues.
+
+  - amq_message class was ignoring persistent setting in testfill method;
+    thus serial client "persistent" option had no effect - fixed.
+
+  - openamq server now purges memory (50% purge) when it reaches the
+    preset server limit.
+
+  - HANDLE BROWSE fixed to return accurate message number (was always
+    zero).
+
+  - HANDLE REPLY, CHANNEL REPLY were not being sent at end of logical
+    unit of work, but at start.  This has now been fixed.
+
+0.8b1 - 2005/03/28
+
+  - server correctly negotiates channel shut-down in case of soft
+    errors (e.g. transaction too large).
+
+  - serial and asynch clients modified to handle channel & handle
+    shut-down better.
+
+  - first version of agnostic level 2 client finished.
+
+  - now uses dynamic buckets for more efficient storage of in-memory
+    messages (previously used fixed bucket size of 32k).
+
+  - serial test client was not using accurate batch sizes - fixed.
+
+0.8b0 - 2005/03/23
+
+  - transaction handling substantially rewritten to work around
+    limitations of BDB subsystem.
+
+  - consumers were improperly counted at disconnection, so server
+    would eventually report "Too many consumers" for queue - fixed.
+
+  - server misbehaved on some boxes when client disconnected abruptly;
+    caused by bug in SMT layer - fixed.
+
+  - server mishandled ACKs sent in batches of 1 with the result that
+    it would wrongly treat the queue as being "full" when it was not.
+
+  - server now automatically rollsback a transaction if the client
+    disconnects during an open transaction.
+
+  - server sometimes blocked when committing messages; problem was
+    caused by misuse of BDB transaction handles (fixed).
+
+  - if client disconnects before committing acknowledgements, the
+    affected messages are released for dispatching to other clients.
+
+0.8a0 - 14 March 2005
+    - when server exceeds allowed memory, displays console warning
+    - implemented transaction limit (TXN_LIMIT in CONNECTION TUNE)
+    - server core updated to AMQP/0.8
+    - asynch and serial clients updated to AMQP/0.8
+    - implemented layered configuration files (amq_custom.cfg)
+    - first draft of openamq server documentation
+
+0.7d2 - 10 March 2005
+    - added queue 'page-size' option for disk page control
+    - added queue 'extent-size' option for file extent (in pages)
+    - added queue 'block-size' option for block size (physical record)
+
+0.7d1 - 9 March 2005
+    - fixed 'unreliable' HANDLE CONSUME option which auto-acks messages
+    - added 'get content' method to amq_message class
+    - added Java client and chat program
+    - added chat programs to stdc clients (these work with the Java chat)
+    - fixed some portability issues for Win32
+
+0.7d0 - 9 March 2005
+    - added queue 'priority-levels' option
+    - implemented message priorities with up to 10 priority levels
+    - added queue 'persistent' option, forces all messages to disk
+    - fixed several issues with HANDLE QUERY/BROWSE
+    - added support for user authorisation using PLAIN mechanism
+    - added support for NONE security mechanism (default)
+
+0.7c3 - 2 March 2005
+    - added queue 'browsable' option, disables HANDLE QUERY/BROWSE on queue
+    - added queue 'max-messages' option, limits total size of queue
+    - added queue 'max-message-size' option, limits size of messages on queue
+    - added server 'max-memory' option, limits server total memory usage
+    - server did not send useful reply code to oversized fragments - fixed
+
+0.7c2 - 1 March 2005
+    - added queue 'auto-purge' option, empties queue at startup
+    - added queue 'min-consumers' option, disallows producers if no consumers
+    - added queue 'max-consumers' option to limit max consumers
+    - added queue 'memory-queue-max' option to limit memory consumption
+
+0.7c1 - 18 February 2005
+    - server name & banner changed to "openamqd"
+    - fixed various minor issues in the server
+    - HANDLE BROWSE message did not implement confirm tag - fixed
+
+0.7c0 - 17 February 2005
+    - added server support for HANDLE QUERY, HANDLE BROWSE commands
+    - added serial client support for HANDLE INDEX
+    - persistent messages were not dispatched correctly - fixed
+    - server was aborting when dispatching persistent messages - fixed
+
+0.7b6 - 11 February 2005
+    - disconnected clients could not reconnect reliably - fixed
+    - server occasionally got null socket handle from APR and aborted - fixed
+    - transaction management improved for persistent messages
+    - test client can now handle large (gigabyte) messages (it spools them)
+    - server no longer displays 'socket closed' error messages
+    - server politely says 'Interrupted...' when Ctrl-C is used
+    - serial client agent timed-out on large message sending - fixed
+    - serial client was leaking spool files - fixed
+    - server was leaking spool files - fixed
+    - server was leaking messages/buckets if client aborted - fixed
+
+0.7b5 - 9 February 2005
+    - CHANNEL ACK did not work as per AMQ RFC 006; it required that the
+      message was present and returned a code 311 if not.  Now it allows
+      the message number to be defined arbitrarily high
+    - CHANNEL ACK was not failing on non-transacted messages - fixed
+    - HANDLE SEND was not correctly covered by transaction - fixed
+
+0.7b4 - 26 January 2005
+    - com+ component v0.2 added
+
+0.7b3 - 25 January 2005
+    - client failed when receiving handle_notify during close; fixed
+    - queue management got confused when persistent messages used
+    - amqpcli_serial changed to use temporary queue (cleaned at startup)
+    - amqpcli_serial now allows repeated testing (-r option)
+    - temporary queues were not working - fixed
+    - added HANDLE FLOW methods to serial & asynch clients
+    - fixed error in framing code for HANDLE FLOW message
+
+0.7b2 - 19 January 2005
+    - fixes to build process
+
+0.7b1 - 14 January 2005
+    - added tracing control to servers and clients (-t 1 to -t 3)
+    - improved clients to allow wider range of tests
+    - many fixes to boom projects to allow sources to build
+    - full openamq source packager (mksrc)
+
+0.7b0 - 7 January 2005
+    - finished testing of new queue implementation
+
+0.7a2 - 3 January 2005
+    - started using new queue implementation
+
+0.7a1 - 27 December 2004
+    - various minor fixes
+
+0.7a0 - 21 December 2004
+    - added restartability (HANDLE PREPARE, HANDLE READY)
+    - moved to base/2.1
+
+0.6h4
+    - added verbose reply texts for all server errors
+    - server would crash if run without any config data - fixed
+    - was not handling large messages (HANDLE SEND) - fixed
+    - under Windows, ctrl-C was not being trapped - fixed
+    - file transfer application added in prototype form
+
+0.6h3 - 13 December 2004
+
+    - server did not support named temporary queues correctly - fixed
+    - server failed when persistent messages were sent - fixed
+    - first release of COM+ client component (blocking)
+
+0.6h2 - 9 December 2004

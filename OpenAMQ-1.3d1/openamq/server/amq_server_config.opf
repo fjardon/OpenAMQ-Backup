@@ -1,0 +1,506 @@
+<?xml?>
+<!--
+    Copyright (c) 2007 iMatix Corporation
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or (at
+    your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
+
+    For information on alternative licensing for OEMs, please contact
+    iMatix Corporation.
+-->
+
+<opf
+    name    = "amq_server_config"
+    comment = "Server configuration properties"
+    script  = "opf_gen"
+    root    = "config"
+    config  = "amq_server.cfg"
+    >
+
+<!-- Generate the OpenAMQ Console configuration interface -->
+<plugin name = "amq_console_config" />
+
+<public>
+extern $\(selftype)
+    *amq_server_config;                 //  Global properties object
+</public>
+
+<private>
+$\(selftype)
+    *amq_server_config = NULL;          //  Global properties
+</private>
+
+<path name = "server">
+    <property name = "port" type = "icl_shortstr_t" default = "5672">
+    Server port for clients
+    <doc>
+    Specifies the port on which the server should open its connections.
+    </doc>
+    </property>
+
+    <property name = "listen" type = "icl_shortstr_t" default = "*">
+    Address (local network interface) to listen on
+    <doc>
+    Specifies the network interface on which the server should listen for
+    connections.  By default this is *, meaning all interfaces.  You would
+    choose to set an address when you use OpenAMQ on a server with multiple
+    network interfaces, e.g. routing between two networks.
+    </doc>
+    </property>
+
+    <property name = "queue timeout" type = "int" default = "0" dynamic = "1">
+    Timeout for auto-deleted queues
+    <doc>
+    Specifies the delay, in seconds, after which auto-deleted queues
+    are effectively deleted, following disconnection of their last
+    consumer. If zero, queues are deleted immediately.
+    </doc>
+    </property>
+
+    <property name = "vhost" type = "icl_shortstr_t" default = "/">
+    Server vhost identifier
+    <doc>
+    Specifies the virtual host name, an arbitrary string. OpenAMQ does not
+    implement virtual hosts but uses this string to identify servers to
+    prevent client applications from mistakenly connecting to the wrong
+    server.  We recommend you set this on production servers and on all
+    failover pairs.  Note that the two servers in a failover pair must use
+    an identical vhost identifier.
+    </doc>
+    </property>
+
+    <property name = "user" type = "char *">
+    User to run server as
+    <doc>
+    If you specify a user and group, the server will switch to that user
+    and group after opening its port, thus dropping any privileges it
+    previously had.
+    </doc>
+    </property>
+
+    <property name = "group" type = "char *">
+    Group to run server as
+    <doc>
+    If you specify a user and group, the server will switch to that user
+    and group after opening its port, thus dropping any privileges it
+    previously had.
+    </doc>
+    </property>
+</path>
+
+<path name = "resources">
+    <property name = "monitor" type = "int" default = "0" dynamic = "1">
+    Monitor interval, seconds
+    <doc>
+    Specifies the interval in seconds at which the server will report
+    its message rates.  If zero, no monitoring is shown. The recommended
+    value is 1, if monitoring is desired.
+    </doc>
+    </property>
+
+    <property name = "dump state" type = "int" default = "60" dynamic = "1">
+    Dump state interval, seconds
+    <doc>
+    Specifies the interval at which the server will report its state.
+    This shows the number of messages, queues, consumers, etc. used by
+    the server. If zero, no state is logged.
+    </doc>
+    </property>
+
+    <property name = "record stats" type = "Bool" default = "0" dynamic = "1">
+    Record performance statistics
+    <doc>
+    Specifies whether or not the server records performance statistics
+    in a format suitable for importing into a spreadsheet.  If set, the
+    server creates a file called 'amq_server_stats_(portnumber).del' which
+    contains performance statistics in a comma-delimited format.  For this
+    setting to take effect, the monitor option must also be set.
+    </doc>
+    </property>
+</path>
+
+<path name = "logging">
+    <property name = "log path" type = "icl_shortstr_t" default = "logs">
+    Active log file directory
+    <doc>
+    Specifies the directory path into which active log files are
+    placed.
+    </doc>
+    </property>
+
+    <property name = "keep logs" type = "Bool" default = "1">
+    Keep log files
+    <doc>
+    Specifies whether or not the server should keep logs.  If zero,
+    the server will not keep logs.  If 1, it will keep an alert log,
+    a daily log, and a debug log as specified.
+    </doc>
+    </property>
+
+    <property name = "archive path" type = "icl_shortstr_t" default = "archive">
+    Archive log file directory
+    <doc>
+    Specifies the directory path into which archived log files are
+    placed.  This can be the same as the active path; archived log
+    files are renamed to avoid conflict with active log files.
+    </doc>
+    </property>
+
+    <property name = "archive cmd" type = "icl_shortstr_t">
+    Archive log file command
+    <doc>
+    If specified, this command is run on all archived log files. You can
+    use this option to compress archived log files, or clean up old and
+    unwanted files.  When the command is run, the name of the archived
+    log file is provided to it as a single argument.
+    </doc>
+    </property>
+
+    <property name = "alert log" type = "icl_shortstr_t" default = "alert.log">
+    Error log file name
+    <doc>
+    The name of the alert log file, which records all errors and warnings
+    issued by the server.  Note that the server port number is always added
+    to the name of the log file.
+    </doc>
+    </property>
+
+    <property name = "daily log" type = "icl_shortstr_t" default = "daily.log">
+    Daily log file name
+    <doc>
+    The name of the daily log file, which records all normal activity
+    as well as errors. Note that the server port number is always added
+    to the name of the log file.
+    </doc>
+    </property>
+
+    <property name = "debug log" type = "icl_shortstr_t" default = "debug.log">
+    Debug log file name
+    <doc>
+    The name of the debug log file, which records all normal activity,
+    errors, and debug trace information. Note that the server port number
+    is always added to the name of the log file.
+    </doc>
+    </property>
+
+    <property name = "debug route" type = "Bool" default = "0" dynamic = "1">
+    Debug message routing?
+    <doc>
+    Specifies whether exchange routing is logged or not. Set this
+    option when you are debugging a message routing design.  For
+    production use, we recommend you do not set this option.
+    </doc>
+    </property>
+
+    <property name = "debug queue" type = "Bool" default = "0" dynamic = "1">
+    Debug queue activity?
+    <doc>
+    Specifies whether queue dispatching is logged or not.  Set this
+    option when you are debugging message processing in the server.
+    For production use, we recommend you do not set this option.
+    </doc>
+    </property>
+
+    <property name = "debug peering" type = "Bool" default = "0" dynamic = "1">
+    Debug peering messages?
+    <doc>
+    Specifies whether peering activity is logged or not. Set this option if
+    you need to debug exchange federation and failover. For production use,
+    we recommend you do not set this option.
+    </doc>
+    </property>
+
+    <property name = "debug console" type = "Bool" default = "0" dynamic = "1">
+    Debug console I/O?
+    <doc>
+    Specifies whether console activity is logged or not.  Set this
+    option when you are configuring or debugging the console. For
+    production use, we recommend you do not set this option.
+    </doc>
+    </property>
+
+    <property name = "trace" type = "int" default = "0" dynamic = "1">
+    Protocol trace level
+    <doc>
+    Specifies the protocol debug level, which can be 0 (no tracing),
+    1 (show information and protocol methods), 2 (show protocol
+    animation), 3 (show wire-level data).  You should not use any
+    tracing on production servers except in low-volume scenarios.
+    </doc>
+    </property>
+</path>
+
+<path name = "tuning">
+    <property name = "heartbeat" type = "int" default = "2" dynamic = "1">
+    Heartbeat timer, seconds
+    <doc>
+    Defines the timeout for connection heartbeating.
+    </doc>
+    </property>
+
+    <property name = "setup timeout" type = "int" default = "5">
+    Connection setup timeout, seconds
+    <doc>
+    Defines the maximum amount of time connection negotiation may
+    take, before the connection is forcibly closed by the server.
+    </doc>
+    </property>
+
+    <property name = "close timeout" type = "int" default ="5">
+    Connection close timeout, seconds
+    <doc>
+    Defines the maximum amount of time the server will wait for a
+    client to send a connection.close-ok when closing the
+    connection due to an exception.
+    </doc>
+    </property>
+
+    <property name = "accept retry timeout" type = "int" default = "60" min = "1">
+    Timeout before retrying accept calls, seconds
+    <doc>
+    Defines the amount of time the server will wait before retrying
+    an accept call if the call failed due to running out of file
+    descriptors.
+    </doc>
+    </property>
+
+    <property name = "polling threads" type = "int" default = "4">
+    Number of polling OS threads
+    <doc>
+    On multithreaded builds, defines the number of OS threads dedicated
+    to socket polling.
+    </doc>
+    </property>
+
+    <property name = "working threads" type = "int" default = "4">
+    Number of working OS threads
+    <doc>
+    On multithreaded builds, defines the number of OS threads dedicated to
+    processing, that is, tasks other than socket polling.
+    </doc>
+    </property>
+
+    <property name = "tcp nodelay" type = "Bool" default = "1" dynamic = "1">
+    TCP/IP NODELAY option
+    <doc>
+    If this value is 1, socket data is written immediately, which is
+    usually good for latency.  If this value is 0, data is buffered
+    until there is a full packet, which is usually good for throughput.
+    </doc>
+    </property>
+
+    <property name = "tcp rcvbuf" type = "int" default = "0" dynamic = "1">
+    TCP/IP receive buffer, in bytes
+    <doc>
+    If this value is greater than zero, all client connections will use
+    the specified value.  Note: setting this value is delicate, do not
+    use this option unless you know what you are doing.
+    </doc>
+    </property>
+
+    <property name = "tcp sndbuf" type = "int" default = "0" dynamic = "1">
+    TCP/IP send buffer, in bytes
+    <doc>
+    If this value is greater than zero, all client connections will use
+    the specified value.  Note: setting this value is delicate, do not
+    use this option unless you know what you are doing.
+    </doc>
+    </property>
+
+    <property name = "frame max" type = "int" min = "2048" max = "2097152" default = "32768">
+    Maximum size of AMQP content frames
+    <doc>
+    Defines the maximum frame size the server will accept. Larger frame
+    sizes are useful for applications that create very large message
+    headers but will cause congestion on multi-channel connections.
+    </doc>
+    </property>
+
+    <property name = "direct" type = "int" default = "0">
+    Enables Direct Mode for client connections
+    <doc>
+    If set to 1, new connections will by default use Direct Mode.  Applications
+    can override this by setting the connection->direct property on new connections.
+    </doc>
+    </property>
+
+    <property name = "private credit" type = "int" default = "1024">
+    Credit window for private queues
+    <doc>
+    Defines the credit window for private queues.  The credit window regulates
+    the flow of messages internally.  A higher value will move messages faster
+    off private message queues and into the protocol transport threads. This
+    will increase server memory consumption (before configured queue limits
+    are applied) but can improve performance.  For high performance applications
+    we recommend using Direct Mode.  To disable credit based flow control on
+    private queues, set to zero.
+    </doc>
+    </property>
+
+    <property name = "shared credit" type = "int" default = "1">
+    Credit window for shared queues
+    <doc>
+    Defines the credit window for shared queues.  The credit window regulates
+    the flow of messages internally.  The default value of 1 will provide the
+    best response to blocked/slow clients working on shared queues.  Set to
+    zero to disable credit based flow control on shared queues.
+    </doc>
+    </property>
+</path>
+
+<path name = "failover">
+    <property name = "backup" type = "icl_shortstr_t" default = "">
+    Failover backup host:port
+    <doc>
+    Used when running the primary server, specifies the failover backup
+    server for the high-availability pair. Use the internet name of the
+    backup server as 'host' or 'host:port' if it is not running on port
+    5672.  Do not specify this option together with the 'primary' option.
+    </doc>
+    </property>
+
+    <property name = "primary" type = "icl_shortstr_t" default = "">
+    Failover primary host:port
+    <doc>
+    Used when running the backup server, specifies the failover primary
+    server for the high-availability pair. Use the internet name of the
+    primary server as 'host' or 'host:port' if it is not running on port
+    5672.  Do not specify this option together with the 'backup' option.
+    </doc>
+    </property>
+
+    <property name = "timeout" type = "int" default = "5" min = "1" max = "60" prefix = "failover">
+    Failover timeout, in seconds
+    <doc>
+    Specifies the delay in seconds after which the backup peer will become
+    the primary peer.  This switch over will happen only if and when an
+    application connects to the backup peer after the failover timeout has
+    expired.  Reducing this value will allow failover to happen faster but
+    will increase the risk of unnecessary failover due to transient network
+    issues.
+    </doc>
+    </property>
+</path>
+
+<path name = "federation">
+    <property name = "attach" type = "icl_shortstr_t" default = "">
+    Enable auto-federation to specified host
+    <doc>
+    If specified, the server will auto-federate to the specified parent
+    OpenAMQ server.  This federates three exchanges: amq.service (a direct
+    exchange) using a service federation; amq.data (a topic exchange) using
+    a fanout federation; and amq.dataex (a headers exchange) using a fanout
+    exchange.  This gives you an instant enterprise service bus (ESB) based
+    on a spoke-and-hub model.  You can fine-tune auto-federation using the
+    --attach-login and --attach-vhost options.
+    </doc>
+    </property>
+
+    <property name = "attach vhost" type = "icl_shortstr_t" default = "/">
+    Auto-federation virtual host name
+    <doc>
+    Specifies the auto-federation vhost name, an arbitrary string that
+    will be used when connecting to the parent server. This must match
+    the vhost setting of the parent server.
+    </doc>
+    </property>
+
+    <property name = "attach login" type = "icl_shortstr_t" default = "peering">
+    Auto-federation login user name
+    <doc>
+    Specifies the user name to be used when logging in.  You do not need to
+    specify a password, it is taken from the security section.
+    </doc>
+    </property>
+
+    <property name = "attach all" type = "icl_shortstr_t" default = "">
+    Auto-federate exchanges by pattern
+    <doc>
+    If set, the server will auto-federate all exchanges that match the
+    specified pattern which can include * and ? to mean zero or more, or
+    a single arbitrary character.  You can use naming conventions to
+    federate specific groups of exchanges.  Put quotes around wildcards
+    to avoid shell expansion.
+    </doc>
+    </property>
+</path>
+
+<path name = "direct">
+    <property name = "batching" type = "int" max = "2097152" default = "32768">
+    Maximum size of Direct Mode batches
+    <doc>
+    Defines the maximum batch size for Direct Mode opportunistic batching on
+    message sends.  Setting this higher will improve throughput, and usually
+    with lower latency, but will cause higher memory consumption.  Setting
+    this to zero will switch off batching.  Any value less than 2048 is
+    treated as zero.
+    </doc>
+    </property>
+
+    <property name = "heartbeat" type = "int" default = "2" prefix = "direct">
+    Heartbeat timer, seconds for Direct Mode
+    <doc>
+    Defines the timeout for Direct Mode connection heartbeating.
+    </doc>
+    </property>
+</path>
+
+<path name = "compatibility">
+    <property name = "no ack" type = "Bool" default = "0">
+    Do not implement acknowledgments
+    <doc>
+    Provides backwards compatibility with earlier versions of OpenAMQ for
+    use with shared queues.  From 1.4b4 and 1.3d0 onwards OpenAMQ treats
+    the Basic.Consume no-ack flag as meaningful, whereas prior versions
+    ignored this flag.  Applications that do not set this flag when
+    consuming from shared queues must now issue Basic.Ack for each message
+    they received.  The --no-ack option restores the prior way of working
+    and allows old applications to work unchanged.
+    </doc>
+    </property>
+</path>
+
+<path name = "internal">
+    <property name = "auto crash" type = "int" default = "0" dynamic = "1">
+    Auto-crash test timer, seconds
+    <doc>
+    If set, the server will crash at irregular intervals, being some random
+    point within the number of seconds specified.  This is used specifically
+    to test applications for failover and robustness.  Set to zero for all
+    real usage.
+    </doc>
+    </property>
+
+    <property name = "auto block" type = "int" default = "0" dynamic = "1">
+    Auto-freeze test timer, seconds
+    <doc>
+    If set, the server will block at irregular intervals, being some random
+    point within the number of seconds specified.  This is used specifically
+    to test applications for failover and robustness.  Set to zero for all
+    real usage.
+    </doc>
+    </property>
+
+    <property name = "kernel limit" type = "int" default = "0" dynamic = "1">
+    SMT kernel limit
+    <doc>
+    Sets an action limit for the SMT kernel: after this many steps it will
+    exit.  Use this to break the server for failure testing.  Set to zero for
+    all real usage.
+    </doc>
+    </property>
+</path>
+
+<!-- These sections are allowed but ignored -->
+<path name = "queue_profile" />
+<path name = "security" />
+<path name = "federate" />
+
+</opf>

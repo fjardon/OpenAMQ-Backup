@@ -1,0 +1,13 @@
+#! /bin/sh
+#
+# Created by configure
+
+"./configure" \
+"--without-libtool" \
+"--disable-shared" \
+"--without-sendfile" \
+"--enable-nonportable-atomics" \
+"--quiet" \
+"--enable-debug" \
+"--enable-threads" \
+"$@"

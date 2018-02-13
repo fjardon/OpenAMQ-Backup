@@ -1,0 +1,19 @@
+#! /bin/sh
+#
+# Created by configure
+
+"./configure" \
+"--without-libtool" \
+"--disable-shared" \
+"--without-sendfile" \
+"--enable-nonportable-atomics" \
+"--quiet" \
+"--enable-debug" \
+"--enable-threads" \
+"--with-apr=../apr" \
+"--without-pgsql" \
+"--without-mysql" \
+"--without-sqlite3" \
+"--without-sqlite2" \
+"--without-berkeley-db" \
+"$@"

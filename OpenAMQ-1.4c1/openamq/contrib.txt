@@ -1,0 +1,18 @@
+Contributors to OpenAMQ
+
+We are grateful to these individuals, who contributed patches and code to the
+OpenAMQ project:
+
+* Rakan El-Khalil
+* Tim Esselens
+* Gustavo Broos
+* Mato Lucina
+* Martin Sustrik
+* Jonathan Schultz
+* Kelly McLaughlin
+* Esteve Fernandez
+* Dmitri Tsyganov
+* Benjamin Henrion
+* Pieter Hintjens
+
+And many more who provided suggestions, bug reports and advice.

@@ -1,0 +1,428 @@
+Using command-line options
+==========================
+
+You can set these options from the command-line; they affect only
+the specific instance of the running server:
+
+    --port 5672                    Server port for clients
+    --listen *                     Address (local network interface) to listen on
+    --queue_timeout 0              Timeout for auto-deleted queues
+    --vhost /                      Server vhost identifier
+    --user value                   User to run server as
+    --group value                  Group to run server as
+    --monitor 0                    Monitor interval, seconds
+    --dump_state 60                Dump state interval, seconds
+    --record_stats 0               Record performance statistics
+    --log_path /var/log/openamq    Active log file directory
+    --keep_logs 1                  Keep log files
+    --archive_cmd value            Archive log file command
+    --alert_log alert.log          Error log file name
+    --daily_log daily.log          Daily log file name
+    --debug_log debug.log          Debug log file name
+    --debug_route 0                Debug message routing?
+    --debug_queue 0                Debug queue activity?
+    --debug_peering 0              Debug peering messages?
+    --debug_console 0              Debug console I/O?
+    --trace 0                      Protocol trace level
+    --syslog 0                     Use syslog logging protocol
+    --coremark_cycles 250000       Duration of CoreMark test
+    --heartbeat 2                  Heartbeat timer, seconds
+    --setup_timeout 5              Connection setup timeout, seconds
+    --close_timeout 5              Connection close timeout, seconds
+    --accept_retry_timeout 60      Timeout before retrying accept calls, seconds
+    --polling_threads 4            Number of polling OS threads
+    --working_threads 4            Number of working OS threads
+    --tcp_nodelay 1                TCP/IP NODELAY option
+    --tcp_rcvbuf 0                 TCP/IP receive buffer, in bytes
+    --tcp_sndbuf 0                 TCP/IP send buffer, in bytes
+    --frame_max 32768              Maximum size of AMQP content frames
+    --direct 0                     Enables Direct Mode for client connections
+    --private_credit 1024          Credit window for private queues
+    --shared_credit 1              Credit window for shared queues
+    --backup                       Failover backup host:port
+    --primary                      Failover primary host:port
+    --failover_timeout 5           Failover timeout, in seconds
+    --attach                       Enable auto-federation to specified host
+    --attach_vhost /               Auto-federation virtual host name
+    --attach_login peering         Auto-federation login user name
+    --attach_all                   Auto-federate exchanges by pattern
+    --batching 32768               Maximum size of Direct Mode batches
+    --direct_heartbeat 2           Heartbeat timer, seconds for Direct Mode
+    --no_ack 0                     Do not implement acknowledgments
+    --auto_crash 0                 Auto-crash test timer, seconds
+    --auto_block 0                 Auto-freeze test timer, seconds
+    --kernel_limit 0               SMT kernel limit
+
+Creating a configuration file
+=============================
+
+You can also set the above options in an XML text file, to affect
+all future instances of the running server. To create a new XML
+configuration file, copy the following block to an editor session,
+and then:
+
+ 1. Delete all options you want to leave as default.
+ 2. Delete this comment and update your name and the date.
+ 3. Save file as new amq_server.cfg or merge with existing copy.
+ 4. Restart the server.
+
+    <?xml version="1.0"?>
+    <!--
+        Revised: yyyy/mm/dd by yourname
+     -->
+    
+    <config>
+        <server
+            port = "5672"
+            listen = "*"
+            queue_timeout = "0"
+            vhost = "/"
+            user = "value"
+            group = "value"
+        />
+        <resources
+            monitor = "0"
+            dump_state = "60"
+            record_stats = "0"
+        />
+        <logging
+            log_path = "/var/log/openamq"
+            keep_logs = "1"
+            archive_cmd = "value"
+            alert_log = "alert.log"
+            daily_log = "daily.log"
+            debug_log = "debug.log"
+            debug_route = "0"
+            debug_queue = "0"
+            debug_peering = "0"
+            debug_console = "0"
+            trace = "0"
+            syslog = "0"
+        />
+        <tuning
+            coremark_cycles = "250000"
+            heartbeat = "2"
+            setup_timeout = "5"
+            close_timeout = "5"
+            accept_retry_timeout = "60"
+            polling_threads = "4"
+            working_threads = "4"
+            tcp_nodelay = "1"
+            tcp_rcvbuf = "0"
+            tcp_sndbuf = "0"
+            frame_max = "32768"
+            direct = "0"
+            private_credit = "1024"
+            shared_credit = "1"
+        />
+        <failover
+            backup = ""
+            primary = ""
+            timeout = "5"
+        />
+        <federation
+            attach = ""
+            attach_vhost = "/"
+            attach_login = "peering"
+            attach_all = ""
+        />
+        <direct
+            batching = "32768"
+            heartbeat = "2"
+        />
+        <compatibility
+            no_ack = "0"
+        />
+        <internal
+            auto_crash = "0"
+            auto_block = "0"
+            kernel_limit = "0"
+        />
+    </config>
+
+Setting server options
+===========================
+
+port = "5672":
+    Specifies the port on which the server should open its connections.
+    Default value is 5672.                                             
+listen = "*":
+    Specifies the network interface on which the server should listen for
+    connections. By default this is *, meaning all interfaces. You would 
+    choose to set an address when you use OpenAMQ on a server with       
+    multiple network interfaces, e.g. routing between two networks.      
+    Default value is *.                                                  
+queue_timeout = "0":
+    Specifies the delay, in seconds, after which auto-deleted queues are
+    effectively deleted, following disconnection of their last consumer.
+    If zero, queues are deleted immediately. Default value is 0. This   
+    option can be changed at runtime.                                   
+vhost = "/":
+    Specifies the virtual host name, an arbitrary string. OpenAMQ does not
+    implement virtual hosts but uses this string to identify servers to   
+    prevent client applications from mistakenly connecting to the wrong   
+    server. We recommend you set this on production servers and on all    
+    failover pairs. Note that the two servers in a failover pair must use 
+    an identical vhost identifier. Default value is /.                    
+user = "value":
+    If you specify a user and group, the server will switch to that user
+    and group after opening its port, thus dropping any privileges it   
+    previously had. Default value is not defined.                       
+group = "value":
+    If you specify a user and group, the server will switch to that user
+    and group after opening its port, thus dropping any privileges it   
+    previously had. Default value is not defined.                       
+
+Setting resources options
+===========================
+
+monitor = "0":
+    Specifies the interval in seconds at which the server will report its 
+    message rates. If zero, no monitoring is shown. The recommended value 
+    is 1, if monitoring is desired. Default value is 0. This option can be
+    changed at runtime.                                                   
+dump_state = "60":
+    Specifies the interval at which the server will report its state. This
+    shows the number of messages, queues, consumers, etc. used by the     
+    server. If zero, no state is logged. Default value is 60. This option 
+    can be changed at runtime.                                            
+record_stats = "0":
+    Specifies whether or not the server records performance statistics in 
+    a format suitable for importing into a spreadsheet. If set, the server
+    creates a file called 'amq_server_stats_(portnumber).del' which       
+    contains performance statistics in a comma-delimited format. For this 
+    setting to take effect, the monitor option must also be set. Default  
+    value is 0. This option can be changed at runtime.                    
+
+Setting logging options
+===========================
+
+log_path = "/var/log/openamq":
+    Specifies the directory into which active log files are placed. To get
+    the old behaviour, set this option to 'logs'. Default value is        
+    /var/log/openamq.                                                     
+keep_logs = "1":
+    Specifies whether or not the server should keep logs. If zero, the 
+    server will not keep logs. If 1, it will keep an alert log, a daily
+    log, and a debug log as specified. Default value is 1.             
+archive_cmd = "value":
+    If specified, this command is run on all archived log files. You can 
+    use this option to compress archived log files, or clean up old and  
+    unwanted files. When the command is run, the name of the archived log
+    file is provided to it as a single argument. Default value is not    
+    defined.                                                             
+alert_log = "alert.log":
+    The name of the alert log file, which records all errors and warnings 
+    issued by the server. Note that the server port number is always added
+    to the name of the log file. Default value is alert.log.              
+daily_log = "daily.log":
+    The name of the daily log file, which records all normal activity as
+    well as errors. Note that the server port number is always added to 
+    the name of the log file. Default value is daily.log.               
+debug_log = "debug.log":
+    The name of the debug log file, which records all normal activity,   
+    errors, and debug trace information. Note that the server port number
+    is always added to the name of the log file. Default value is        
+    debug.log.                                                           
+debug_route = "0":
+    Specifies whether exchange routing is logged or not. Set this option
+    when you are debugging a message routing design. For production use,
+    we recommend you do not set this option. Default value is 0. This   
+    option can be changed at runtime.                                   
+debug_queue = "0":
+    Specifies whether queue dispatching is logged or not. Set this option 
+    when you are debugging message processing in the server. For          
+    production use, we recommend you do not set this option. Default value
+    is 0. This option can be changed at runtime.                          
+debug_peering = "0":
+    Specifies whether peering activity is logged or not. Set this option  
+    if you need to debug exchange federation and failover. For production 
+    use, we recommend you do not set this option. Default value is 0. This
+    option can be changed at runtime.                                     
+debug_console = "0":
+    Specifies whether console activity is logged or not. Set this option  
+    when you are configuring or debugging the console. For production use,
+    we recommend you do not set this option. Default value is 0. This     
+    option can be changed at runtime.                                     
+trace = "0":
+    Specifies the protocol debug level, which can be 0 (no tracing), 1    
+    (show information and protocol methods), 2 (show protocol animation), 
+    3 (show wire-level data). You should not use any tracing on production
+    servers except in low-volume scenarios. Default value is 0. This      
+    option can be changed at runtime.                                     
+syslog = "0":
+    Specifies whether or not to use the syslog protocol for logging. By   
+    default log files are written directly to disk. If this option is set 
+    to 1, uses the syslog protocol for all log files. Uses a priority     
+    depending on the type of log message (LOG_ERROR, LOG_INFO, LOG_DEBUG).
+    Uses the LOG_DAEMON facility. Has no effect on Windows. Overrides the 
+    keep_logs option. Default value is 0.                                 
+
+Setting tuning options
+===========================
+
+coremark_cycles = "250000":
+    Defines the duration of the automatic CoreMark performance test, in  
+    event cycles. If 0, no test will be done. Setting this too high will 
+    cause the server to burn CPU at startup. A good value is between 100k
+    and 1M. Default value is 250000.                                     
+heartbeat = "2":
+    Defines the timeout for connection heartbeating. Default value is 2.
+    This option can be changed at runtime.                              
+setup_timeout = "5":
+    Defines the maximum amount of time connection negotiation may take,  
+    before the connection is forcibly closed by the server. Default value
+    is 5.                                                                
+close_timeout = "5":
+    Defines the maximum amount of time the server will wait for a client
+    to send a connection.close-ok when closing the connection due to an 
+    exception. Default value is 5.                                      
+accept_retry_timeout = "60":
+    Defines the amount of time the server will wait before retrying an    
+    accept call if the call failed due to running out of file descriptors.
+    Default value is 60. Minimum value is 1.                              
+polling_threads = "4":
+    On multithreaded builds, defines the number of OS threads dedicated to
+    socket polling. Default value is 4.                                   
+working_threads = "4":
+    On multithreaded builds, defines the number of OS threads dedicated to
+    processing, that is, tasks other than socket polling. Default value is
+    4.                                                                    
+tcp_nodelay = "1":
+    If this value is 1, socket data is written immediately, which is     
+    usually good for latency. If this value is 0, data is buffered until 
+    there is a full packet, which is usually good for throughput. Default
+    value is 1. This option can be changed at runtime.                   
+tcp_rcvbuf = "0":
+    If this value is greater than zero, all client connections will use  
+    the specified value. Note: setting this value is delicate, do not use
+    this option unless you know what you are doing. Default value is 0.  
+    This option can be changed at runtime.                               
+tcp_sndbuf = "0":
+    If this value is greater than zero, all client connections will use  
+    the specified value. Note: setting this value is delicate, do not use
+    this option unless you know what you are doing. Default value is 0.  
+    This option can be changed at runtime.                               
+frame_max = "32768":
+    Defines the maximum frame size the server will accept. Larger frame
+    sizes are useful for applications that create very large message   
+    headers but will cause congestion on multi-channel connections.    
+    Default value is 32768. Minimum value is 2048. Maximum value is    
+    2097152.                                                           
+direct = "0":
+    If set to 1, new connections will by default use Direct Mode.   
+    Applications can override this by setting the connection->direct
+    property on new connections. Default value is 0.                
+private_credit = "1024":
+    Defines the credit window for private queues. The credit window    
+    regulates the flow of messages internally. A higher value will move
+    messages faster off private message queues and into the protocol   
+    transport threads. This will increase server memory consumption    
+    (before configured queue limits are applied) but can improve       
+    performance. For high performance applications we recommend using  
+    Direct Mode. Default value is 1024.                                
+shared_credit = "1":
+    Defines the credit window for shared queues. The credit window        
+    regulates the flow of messages internally. The default value of 1 will
+    provide the best response to blocked/slow clients working on shared   
+    queues. Default value is 1.                                           
+
+Setting failover options
+===========================
+
+backup = "":
+    Used when running the primary server, specifies the failover backup 
+    server for the high-availability pair. Use the internet name of the 
+    backup server as 'host' or 'host:port' if it is not running on port 
+    5672. Do not specify this option together with the 'primary' option.
+    Default value is .                                                  
+primary = "":
+    Used when running the backup server, specifies the failover primary 
+    server for the high-availability pair. Use the internet name of the 
+    primary server as 'host' or 'host:port' if it is not running on port
+    5672. Do not specify this option together with the 'backup' option. 
+    Default value is .                                                  
+timeout = "5":
+    Specifies the delay in seconds after which the backup peer will become
+    the primary peer. This switch over will happen only if and when an    
+    application connects to the backup peer after the failover timeout has
+    expired. Reducing this value will allow failover to happen faster but 
+    will increase the risk of unnecessary failover due to transient       
+    network issues. Default value is 5. Minimum value is 1. Maximum value 
+    is 60.                                                                
+
+Setting federation options
+===========================
+
+attach = "":
+    If specified, the server will auto-federate to the specified parent   
+    OpenAMQ server. This federates three exchanges: amq.service (a direct 
+    exchange) using a service federation; amq.data (a topic exchange)     
+    using a fanout federation; and amq.dataex (a headers exchange) using a
+    fanout exchange. This gives you an instant enterprise service bus     
+    (ESB) based on a spoke-and-hub model. You can fine-tune               
+    auto-federation using the --attach-login and --attach-vhost options.  
+    Default value is .                                                    
+attach_vhost = "/":
+    Specifies the auto-federation vhost name, an arbitrary string that    
+    will be used when connecting to the parent server. This must match the
+    vhost setting of the parent server. Default value is /.               
+attach_login = "peering":
+    Specifies the user name to be used when logging in. You do not need to
+    specify a password, it is taken from the security section. Default    
+    value is peering.                                                     
+attach_all = "":
+    If set, the server will auto-federate all exchanges that match the    
+    specified pattern which can include * and ? to mean zero or more, or a
+    single arbitrary character. You can use naming conventions to federate
+    specific groups of exchanges. Put quotes around wildcards to avoid    
+    shell expansion. Default value is .                                   
+
+Setting direct options
+===========================
+
+batching = "32768":
+    Defines the maximum batch size for Direct Mode opportunistic batching
+    on message sends. Setting this higher will improve throughput, and   
+    usually with lower latency, but will cause higher memory consumption.
+    Setting this to zero will switch off batching. Any value less than   
+    2048 is treated as zero. Default value is 32768. Maximum value is    
+    2097152.                                                             
+heartbeat = "2":
+    Defines the timeout for Direct Mode connection heartbeating. Default
+    value is 2.                                                         
+
+Setting compatibility options
+===========================
+
+no_ack = "0":
+    Provides backwards compatibility with earlier versions of OpenAMQ for 
+    use with shared queues. From 1.4b4 and 1.3d0 onwards OpenAMQ treats   
+    the Basic.Consume no-ack flag as meaningful, whereas prior versions   
+    ignored this flag. Applications that do not set this flag when        
+    consuming from shared queues must now issue Basic.Ack for each message
+    they received. The --no-ack option restores the prior way of working  
+    and allows old applications to work unchanged. Default value is 0.    
+
+Setting internal options
+===========================
+
+auto_crash = "0":
+    If set, the server will crash at irregular intervals, being some     
+    random point within the number of seconds specified. This is used    
+    specifically to test applications for failover and robustness. Set to
+    zero for all real usage. Default value is 0. This option can be      
+    changed at runtime.                                                  
+auto_block = "0":
+    If set, the server will block at irregular intervals, being some     
+    random point within the number of seconds specified. This is used    
+    specifically to test applications for failover and robustness. Set to
+    zero for all real usage. Default value is 0. This option can be      
+    changed at runtime.                                                  
+kernel_limit = "0":
+    Sets an action limit for the SMT kernel: after this many steps it will
+    exit. Use this to break the server for failure testing. Set to zero   
+    for all real usage. Default value is 0. This option can be changed at 
+    runtime.                                                              
+
+

@@ -1,0 +1,53 @@
+<?xml?>
+<!--
+    Copyright (c) 1996-2009 iMatix Corporation
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or (at
+    your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
+
+    For information on alternative licensing for OEMs, please contact
+    iMatix Corporation.
+ -->
+<pdl>
+    <!-- SMT Class definitions -->
+
+    <class name = "smt private module" inherit = "gsl data" >
+    Class file that generates an eponymous library module and header.
+        <derive extension = ".h"      class = "generated"        />
+        <derive extension = ".c"      class = "generated module" />
+        <derive extension = ".hpp"    class = "generated header" 
+                model     = "cpp"                                />
+        <generate model = "cpp">
+            <execute command = "gsl -q -quiet:1 -target:stdcpp" />
+        </generate>
+    </class>
+
+    <class name = "smt public module" inherit = "gsl data" >
+    Class file that generates an eponymous library module and header.
+        <derive extension = ".h"       class = "generated header" />
+        <derive extension = ".c"       class = "generated module" />
+        <derive extension = ".hpp"     class = "generated header" 
+                model     = "cpp"                                 />
+        <distrib as = "binary"  />
+        <install as = "resource"/>
+        <generate model = "cpp">
+            <execute command = "gsl -q -quiet:1 -target:stdcpp" />
+        </generate>
+    </class>
+
+    <class name = "smt main" inherit = "gsl data" >
+    Generates executable
+        <derive extension = ".h"       class = "generated header" />
+        <derive extension = ".c"       class = "generated main" />
+        <distrib as = "binary"  />
+        <install as = "resource"/>
+    </class>
+
+</pdl>

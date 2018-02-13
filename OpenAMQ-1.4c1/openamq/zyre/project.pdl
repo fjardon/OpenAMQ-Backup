@@ -1,0 +1,72 @@
+<?xml?>
+<!--
+    Copyright (c) 2007-2009 iMatix Corporation
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or (at
+    your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
+
+    For information on alternative licensing for OEMs, please contact
+    iMatix Corporation.
+-->
+
+<pdl
+    name      = "OpenAMQ Zyre"
+    version   = "1.4c1"
+    workflow  = "standard.pwl"
+    library   = "libamq_zyre"
+    copyright = "Copyright (c) 2007-2009 iMatix Corporation"
+    >
+<include filename = "prelude.pdl" />
+<inherit filename = "icl_classes.pdl" />
+<inherit filename = "ipr_classes.pdl" />
+<inherit filename = "smt_classes.pdl" />
+
+<file name = "version.h"               class = "c version"         >Project version file</file>
+<file name = "libamq_zyre"             class = "public library"    >Object library</file>
+
+<file name = "zyre.c"                  class = "main program"      >Zyre main</file>
+<file name = "zyre"                    class = "public command"    >Zyre executable</file>
+<file name = "zyre_main.inc"           class = "private resource"  >Zyre mainline</file>
+<file name = "zyre_config.opf"         class = "gsl data"          >Configuration schema</file>
+<file name = "zyre_config.icl"         class = "icl private class"
+                                       generated = "1"             >Configuration class</file>
+<file name = "zyre_backend.icl"        class = "ipr portal"        >Portal to backend handler</file>
+<file name = "zyre_resource.icl"       class = "ipr portal"        >Portal to resource handler</file>
+<file name = "zyre_domain.icl"         class = "icl public class"  >RestMS domain resource</file>
+<file name = "zyre_feed.icl"           class = "icl public class"  >RestMS feed resource</file>
+<file name = "zyre_pipe.icl"           class = "icl public class"  >RestMS pipe resource</file>
+<file name = "zyre_join.icl"           class = "icl public class"  >RestMS join resource</file>
+<file name = "zyre_message.icl"        class = "icl public class"  >RestMS message resource</file>
+<file name = "zyre_content.icl"        class = "icl public class"  >RestMS content resource</file>
+<file name = "zyre_restms.icl"         class = "async private"     >RestMS driver module</file>
+<file name = "zyre_amqp_feed.icl"      class = "icl public class"  >Backend feed cache</file>
+<file name = "zyre_amqp_pipe.icl"      class = "icl public class"  >Backend pipe cache</file>
+<file name = "zyre_amqp_join.icl"      class = "icl public class"  >Backend join cache</file>
+<file name = "zyre_backend_amqp.icl"   class = "async private"     >Backend module for AMQP servers</file>
+<file name = "zyre_digest_amqp.icl"    class = "async private"     >Digest-AMQP access module</file>
+<file name = "zyre_peer.asl"           class = "gsl data"          >Peering method interface</file>
+<file name = "zyre_peer_method.icl"    class = "icl public cont"   >Peering methods, generated</file>
+<file name = "zyre_peer_config.opf"    class = "gsl data"          >Peering config syntax</file>
+<file name = "zyre_peer_config.icl"    class = "icl private cont"  >Peering config class</file>
+<file name = "zyre_peer_config.txt"    class = "generated resource">Peering config docs</file>
+<file name = "zyre_peer_agent.smt"     class = "smt private module"
+                                       generated = "1"             >Peering client agent</file>
+<file name = "zyre_classes.icl"        class = "icl public data"   >Application classes</file>
+
+<file name = "zyre_static.rc"          class = "ipr rc file"       >Static resources</file>
+<file name = "zyre_base.cfg"           class = "private resource"  >Base config file</file>
+
+<!-- Web server infrastructure -->
+<directory name = "webpages">
+    <file name = "http_base.css"       class = "public resource"   >Base CSS style sheet</file>
+    <file name = "index.html"          class = "public resource"   >Empty index page</file>
+</directory>
+
+</pdl>

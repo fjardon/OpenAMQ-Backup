@@ -1,0 +1,59 @@
+<?xml?>
+<!--
+    Copyright (c) 2007-2009 iMatix Corporation
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or (at
+    your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
+
+    For information on alternative licensing for OEMs, please contact
+    iMatix Corporation.
+-->
+
+<pdl
+    name      = "OpenAMQ Shell"
+    version   = "1.4c1"
+    workflow  = "standard.pwl"
+    library   = "libamq_shell"
+    copyright = "Copyright (c) 2007-2009 iMatix Corporation"
+    >
+
+<include filename = "prelude.pdl" />
+<inherit filename = "icl_classes.pdl" />
+<inherit filename = "smt_classes.pdl" />
+
+<file name = "gpl_output"                   class = "private resource"  >Generated code is licensed under the GPL</file>
+<file name = "version.h"                    class = "c version"         >Project version file</file>
+<file name = "libamq_shell"                 class = "public library"    >Object library</file>
+
+<!-- OpenAMQ Management Console front-end -->
+<file name = "amq_shell"                    class = "public command"    >Console shell</file>
+<file name = "amq_shell.c"                  class = "main program"      >Management console</file>
+<file name = "amq_mgt_console.icl"          class = "icl public class"  >Management console class</file>
+<file name = "amq_mgt_broker.icl"           class = "icl public cont"   >Management broker class</file>
+<file name = "amq_mgt_exchange.icl"         class = "icl public cont"   >Management exchange class</file>
+<file name = "amq_mgt_binding.icl"          class = "icl public cont"   >Management binding class</file>
+<file name = "amq_mgt_queue.icl"            class = "icl public cont"   >Management queue class</file>
+<file name = "amq_mgt_config.icl"           class = "icl public cont"   >Management config class</file>
+<file name = "amq_mgt_connection.icl"       class = "icl public cont"   >Management connection class</file>
+<file name = "amq_mgt_queue_connection.icl" class = "icl public cont"   >Management queue connection class</file>
+<file name = "amq_mgt_queue_binding.icl"    class = "icl public cont"   >Management queue binding class</file>
+<file name = "amq_mgt_connection_queue.icl" class = "icl public cont"   >Management connection queue class</file>
+<file name = "amq_operate_api.gsl"          class = "public resource"   >Generates the operator API</file>
+
+<!-- Generate AMQ operate API -->
+<actions>
+  <generate>
+    <execute>
+    gsl -q -quiet:1 amq_operate_api.gsl
+    </execute>
+  </generate>
+</actions>
+
+</pdl>
